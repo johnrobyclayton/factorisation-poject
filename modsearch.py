@@ -48,6 +48,25 @@ def diophantine(a,b,c,d):
   else:
     return(-2,0,0)#print("Solution not possible") 
 
+def primegen():
+    listofprimes=list()
+    if len(listofprimes)==0:
+        listofprimes.append(2)
+        yield listofprimes[-1]
+    def isprime(listofprimes,isit):
+        for x in listofprimes:
+            if isit%x==0:
+                return False
+        return True
+    while True:
+        nextstart=listofprimes[-1]+1
+        while not isprime(listofprimes,nextstart):
+            nextstart+=1
+        listofprimes.append(nextstart)
+        yield listofprimes[-1]
+
+
+
 '''
 Get possible mod factors
 For some p and q
@@ -83,6 +102,9 @@ a pair of product of a pair of partitions will be the moduli of p and q by a
 -----------------------------
 for each product add a multiple of a to get p or q
 '''
+
+
+
 
 def factors(divisor):
     #initialise dictionary to return
@@ -182,71 +204,117 @@ def moddicts(intlist):
     #for key in ((2*3*5,144871%2*3*5),(2*3*7,144871%2*3*7)):
     #    print(key,moddict[key])
 #testdict=moddicts((30,42))
-product=144871
-divisor1=30
-divisor2=42
-factordict=factors(divisor1)
-trialdict=dict()
-for key in factordict.keys():
-    trialdict[key]=factordict[key]
-factordict=factors(divisor2)
-for key in factordict.keys():
-    trialdict[key]=factordict[key]
-for key in trialdict.keys():
-    pass
-    #print (key,'->',trialdict[key])
-factors1=list()
-for factor in trialdict[divisor1,product%divisor1]:
-    factors1.append(factor)
-    #print(factor)
-factors2=list()
-for factor in trialdict[divisor2,product%divisor2]:
-    factors2.append(factor)
-    #print(factor)
-#print(factors1)
-#print(factors2)
-factorfunctions1=dict()
-factorfunctions2=dict()
-for factor1 in factors1:
-    for factor2 in factors2:
-        factorfunctions1[(factor1,factor2)]=(diophantine(divisor1,factor1,divisor2,factor2))    
-for factorfunction in factorfunctions1.keys():
-    if(factorfunctions1[factorfunction][0]==0):
-        print(factorfunction)
-        print(factorfunctions1[factorfunction])
-    #for function in factorfunction.keys():
-        #if function[0]==0:
-            #print(factorfunction.key(),function)
-        #print(factorfunctions1[factorfunctions])
-        #factorfunctions2.append((divisor1,divisor2,factorfunction[1],product%divisor1))
-        #factorfunctions2.append((divisor2,divisor1,factorfunction[2],product%divisor2))
-for factorfunction in factorfunctions1:
-    pass
-    #print(factorfunction)
-    #print(factorfunction[0],'* (',factorfunction[1],'+',factorfunction[2],') +',factorfunction[3])
-    #print(factorfunction[0]* factorfunction[1],'* x +',factorfunction[0]*factorfunction[2]+factorfunction[3])
 
-"""
-trialdict=list()     
-#print((30,144871%30),sorted(testdict[(30,144871%30)]))                
-#print((42,144871%42),sorted(testdict[(42,144871%42)]))                
-for i in  sorted(testdict[(30,144871%30)],reverse=True):
-    for j in sorted(testdict[(42,144871%30)],reverse=True):
-        (w,x,y)=diophantine(30,i,42,j)
-        if(w==0):
-            #print(30,'*(',42,'* x +',x,")+",i,"=",42,"* (",30,"* y +",y,")+",j)
-            trialdict.append((144871,30,42,30*42,i,30,x))
-            trialdict.append((144871,30,42,30*42,j,42,y))
-def first(elem):
-    return elem[5]*elem[6]
-trialsorted=sorted(trialdict, reverse=True, key=first)
-for ts in trialsorted:
-    #ts[0]=d
-    #ts[1]=firstdiv
-    #ts[2]=seconddiv
-    #ts[3]=product of firstdiv and seconddiv
-    #ts[4]=mod of this div
-    #ts[5]=this div
-    #ts[6]=x or y
-    print(ts[0]%ts[1],ts[0]%ts[2],ts[4],ts[6])        
-"""
+def primekproduct(d):
+    primegenerator = primegen()
+    root4d=(d**.25)//1
+    #rootdthird=(rootd/3**.25)//1
+    primeproduct=1
+    listofkprimes=list()
+    prime1=next(primegenerator)
+    prime2=next(primegenerator)
+    prime3=next(primegenerator)
+    primeproduct*=prime1
+    listofkprimes.append(prime1)
+    while primeproduct*prime2 < root4d:
+        listofkprimes.append(next(primegenerator))
+        primeproduct*=listofkprimes[-1]
+    #first=primegenerator.gi_frame.f_locals['listofprimes'][-1]
+    first=listofkprimes[-1]
+    start=primeproduct//first
+    print('first start',start,rootdthird-start,first,(rootdthird-start)/first)
+    multiplier=0
+    while(listofkprimes[multiplier]*start<rootdthird):
+        multiplier+=1
+    multiplier-=1
+    start*=listofkprimes[multiplier]
+    print('second start',start,rootdthird-start,first,(rootdthird-start)/first)
+
+    listoflprimes=list()
+    listoflprimes.append(first)
+    #print (d,(d**.5)//1,(d**.5/3**.5)//1,primeproduct,first,primeproduct//first)
+    start=primeproduct//first
+    #print('try1',first)
+    if (d%(start+first)==0):
+        print('factors found1:',start+first,d/(start+first))
+    nextp=next(primegenerator)
+    #print('try2',nextp)
+    listoflprimes.append(nextp)
+
+
+    
+
+
+
+
+
+
+if __name__ == "__main__":
+    product=144871
+    divisor1=30
+    divisor2=42
+    factordict=factors(divisor1)
+    trialdict=dict()
+    for key in factordict.keys():
+        trialdict[key]=factordict[key]
+    factordict=factors(divisor2)
+    for key in factordict.keys():
+        trialdict[key]=factordict[key]
+    for key in trialdict.keys():
+        pass
+        #print (key,'->',trialdict[key])
+    factors1=list()
+    for factor in trialdict[divisor1,product%divisor1]:
+        factors1.append(factor)
+        #print(factor)
+    factors2=list()
+    for factor in trialdict[divisor2,product%divisor2]:
+        factors2.append(factor)
+        #print(factor)
+    #print(factors1)
+    #print(factors2)
+    factorfunctions1=dict()
+    factorfunctions2=dict()
+    for factor1 in factors1:
+        for factor2 in factors2:
+            factorfunctions1[(factor1,factor2)]=(diophantine(divisor1,factor1,divisor2,factor2))    
+    for factorfunction in factorfunctions1.keys():
+        if(factorfunctions1[factorfunction][0]==0):
+            print(factorfunction)
+            print(factorfunctions1[factorfunction])
+        #for function in factorfunction.keys():
+            #if function[0]==0:
+                #print(factorfunction.key(),function)
+            #print(factorfunctions1[factorfunctions])
+            #factorfunctions2.append((divisor1,divisor2,factorfunction[1],product%divisor1))
+            #factorfunctions2.append((divisor2,divisor1,factorfunction[2],product%divisor2))
+    for factorfunction in factorfunctions1:
+        pass
+        #print(factorfunction)
+        #print(factorfunction[0],'* (',factorfunction[1],'+',factorfunction[2],') +',factorfunction[3])
+        #print(factorfunction[0]* factorfunction[1],'* x +',factorfunction[0]*factorfunction[2]+factorfunction[3])
+
+    """
+    trialdict=list()     
+    #print((30,144871%30),sorted(testdict[(30,144871%30)]))                
+    #print((42,144871%42),sorted(testdict[(42,144871%42)]))                
+    for i in  sorted(testdict[(30,144871%30)],reverse=True):
+        for j in sorted(testdict[(42,144871%30)],reverse=True):
+            (w,x,y)=diophantine(30,i,42,j)
+            if(w==0):
+                #print(30,'*(',42,'* x +',x,")+",i,"=",42,"* (",30,"* y +",y,")+",j)
+                trialdict.append((144871,30,42,30*42,i,30,x))
+                trialdict.append((144871,30,42,30*42,j,42,y))
+    def first(elem):
+        return elem[5]*elem[6]
+    trialsorted=sorted(trialdict, reverse=True, key=first)
+    for ts in trialsorted:
+        #ts[0]=d
+        #ts[1]=firstdiv
+        #ts[2]=seconddiv
+        #ts[3]=product of firstdiv and seconddiv
+        #ts[4]=mod of this div
+        #ts[5]=this div
+        #ts[6]=x or y
+        print(ts[0]%ts[1],ts[0]%ts[2],ts[4],ts[6])        
+    """
