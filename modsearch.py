@@ -106,45 +106,44 @@ for each product add a multiple of a to get p or q
 
 
 
-def factors(divisor):
+def factors(modulus,divisor,listofkprimes):
     #initialise dictionary to return
     toreturn=dict()
-    #for each possible moduli        
-    for modulus in range(1,divisor):
-        #initialise set in dictionary to return possible factors
-        toreturn[(divisor,modulus)]=set()
-        #The multiple of the divisor
-        multiple=1
-        #print('divisor ',i,' modulus ',j)
-        while (divisor*multiple+modulus<divisor**2):
-            #candidate modulus product
-            candidate=divisor*multiple+modulus
-            #get prime factorisation of candidate
-            primelist=list(primefac.primefac(candidate))
-            CandidatePasses=True
-            for eachprime in primelist:
-                if eachprime>=divisor:
+    toreturn[(divisor,modulus)]=set()
+    #The multiple of the divisor
+    multiple=0
+    #print('divisor ',i,' modulus ',j)
+    while (divisor*multiple+modulus<divisor**2):
+        #candidate modulus product
+        candidate=divisor*multiple+modulus
+        #get prime factorisation of candidate
+        primelist=list(primefac.primefac(candidate))
+        CandidatePasses=True
+        for eachprime in primelist:
+            if eachprime>=divisor:
+                CandidatePasses=False
+        #get the number of primes in the candidate prime factorisation
+        lenlist=len(primelist)
+        #use binary split of the list of primes
+        #For each binary split of the prime list get the product of the partition
+        partitionvalue=2**len(primelist)
+        for partitionscheme in range(1,partitionvalue):
+            partitionproduct=1
+            scheme=binarysplit(partitionscheme)
+            #print(partitionscheme,scheme)
+            for pos in range(0,len(scheme)):
+                if(scheme[pos]):
+                    partitionproduct*=primelist[pos]
+            for prime in listofkprimes:
+                if(partitionproduct%prime==0 or (candidate/partitionproduct)%prime==0):
                     CandidatePasses=False
-            #get the number of primes in the candidate prime factorisation
-            lenlist=len(primelist)
-            #use binary split of the list of primes
-            #For each binary split of the prime list get the product of the partition
-            partitionvalue=2**len(primelist)
-            for partitionscheme in range(1,partitionvalue):
-                partitionproduct=1
-                scheme=binarysplit(partitionscheme)
-                #print(partitionscheme,scheme)
-                for pos in range(0,len(scheme)):
-                    if(scheme[pos]):
-                        partitionproduct*=primelist[pos]
-                if(partitionproduct%2==0 or (candidate/partitionproduct)%2==0):
-                    CandidatePasses=False
-                if(partitionproduct<=divisor and candidate/partitionproduct<=divisor and CandidatePasses):
-                    #moddict[(i,j)].add((partitionproduct*candidate//partitionproduct,partitionproduct,candidate//partitionproduct))
-                    toreturn[(divisor,modulus)].add((partitionproduct))
-                    toreturn[(divisor,modulus)].add(candidate//partitionproduct)
-            
-            multiple+=1
+                    break
+            if(partitionproduct<=divisor and candidate/partitionproduct<=divisor and CandidatePasses):
+                #moddict[(i,j)].add((partitionproduct*candidate//partitionproduct,partitionproduct,candidate//partitionproduct))
+                toreturn[(divisor,modulus)].add((partitionproduct))
+                toreturn[(divisor,modulus)].add(candidate//partitionproduct)
+        
+        multiple+=1
     #print (toreturn)
     return toreturn
             
@@ -206,25 +205,59 @@ def moddicts(intlist):
 #testdict=moddicts((30,42))
 
 def primekproduct(d):
+    primek=dict()
+    klist=list()
+    klist.append(dict())
+    klist.append(dict())
+    klist[0]['listofkprimes']=list()
+    klist[0]['primeproduct']=1
+    klist[1]['listofkprimes']=list()
+    klist[1]['primeproduct']=1
     primegenerator = primegen()
-    root4d=(d**.25)//1
-    #rootdthird=(rootd/3**.25)//1
-    primeproduct=1
-    listofkprimes=list()
+    rootd=(d**.5)//1
+    rootdthird=((rootd/(3**.5))**.5)//1
+    #primeproduct=1
+    #listofkprimes=list()
     prime1=next(primegenerator)
     prime2=next(primegenerator)
     prime3=next(primegenerator)
-    primeproduct*=prime1
-    listofkprimes.append(prime1)
-    while primeproduct*prime2 < root4d:
-        listofkprimes.append(next(primegenerator))
-        primeproduct*=listofkprimes[-1]
-    #first=primegenerator.gi_frame.f_locals['listofprimes'][-1]
-    first=listofkprimes[-1]
-    start=primeproduct//first
-    print('first start',start,rootdthird-start,first,(rootdthird-start)/first)
+    print(d,d**.5,(d**.5)/(3**.5),((d**.5)/(3**.5))**.5,rootdthird)
+    print(((42**2)*(3**.5))**2)
+    klist[0]['primeproduct']*=prime1
+    klist[0]['listofkprimes'].append(prime1)
+    klist[0]['primeproduct']*=prime2
+    klist[0]['listofkprimes'].append(prime2)
+    klist[1]['primeproduct']*=prime1
+    klist[1]['listofkprimes'].append(prime1)
+    klist[1]['primeproduct']*=prime2
+    klist[1]['listofkprimes'].append(prime2)
+    while klist[0]['primeproduct']*prime3 < rootdthird:
+        klist[0]['primeproduct']*=prime3
+        klist[0]['listofkprimes'].append(prime3)
+        klist[1]['primeproduct']*=prime3
+        klist[1]['listofkprimes'].append(prime3)
+        prime1=prime2
+        prime2=prime3
+        prime3=next(primegenerator)
+    klist[0]['primeproduct']//=prime2
+    klist[0]['listofkprimes'].pop()   
+    klist[0]['primeproduct']//=prime1
+    klist[0]['listofkprimes'].pop() 
+    klist[1]['primeproduct']//=prime2
+    klist[1]['listofkprimes'].pop()   
+    klist[1]['primeproduct']//=prime1
+    klist[1]['listofkprimes'].pop() 
+    klist[0]['primeproduct']*=prime1
+    klist[0]['listofkprimes'].append(prime1)
+    klist[1]['primeproduct']*=prime2
+    klist[1]['listofkprimes'].append(prime2)
+    #print(klist)
+    return klist
+ 
+
+"""
     multiplier=0
-    while(listofkprimes[multiplier]*start<rootdthird):
+    while(klist[1][listofkprimes][multiplier]*start<rootdthird):
         multiplier+=1
     multiplier-=1
     start*=listofkprimes[multiplier]
@@ -240,13 +273,21 @@ def primekproduct(d):
     nextp=next(primegenerator)
     #print('try2',nextp)
     listoflprimes.append(nextp)
+"""
+
+if __name__ == "__main__":
+    product=4049*6091
+    print(product%6,4049%6,6091%6,product%10,4049%10,6091%10,4049%60,6091%60)
+    klist=primekproduct(product)
+    print(factors(product%klist[0]['primeproduct'],klist[0]['primeproduct'],klist[0]['listofkprimes']))
+    print(factors(product%klist[1]['primeproduct'],klist[1]['primeproduct'],klist[1]['listofkprimes']))
+    klist[0]['factors']=factors(product%klist[0]['primeproduct'],klist[0]['primeproduct'],klist[0]['listofkprimes'])
+    klist[1]['factors']=factors(product%klist[1]['primeproduct'],klist[1]['primeproduct'],klist[1]['listofkprimes'])
+    print(klist)
 
 
-    
 
-
-
-
+"""
 
 
 if __name__ == "__main__":
@@ -293,8 +334,8 @@ if __name__ == "__main__":
         #print(factorfunction)
         #print(factorfunction[0],'* (',factorfunction[1],'+',factorfunction[2],') +',factorfunction[3])
         #print(factorfunction[0]* factorfunction[1],'* x +',factorfunction[0]*factorfunction[2]+factorfunction[3])
-
-    """
+"""
+"""
     trialdict=list()     
     #print((30,144871%30),sorted(testdict[(30,144871%30)]))                
     #print((42,144871%42),sorted(testdict[(42,144871%42)]))                
@@ -317,4 +358,4 @@ if __name__ == "__main__":
         #ts[5]=this div
         #ts[6]=x or y
         print(ts[0]%ts[1],ts[0]%ts[2],ts[4],ts[6])        
-    """
+"""
