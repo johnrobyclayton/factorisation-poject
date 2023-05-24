@@ -25,7 +25,7 @@ def diophantine(a,b,c,d):
   A=a
   B=-c
   C=d-b
-
+  #print('A',A,'B',B,'C',C)
   #Step 1 
   if A==0 and B==0:
     if C == 0: 
@@ -39,11 +39,11 @@ def diophantine(a,b,c,d):
   #Step 3 and 4 
   if (C % gcd == 0):
     x = x1 * (C//gcd)
-    if(x<=0):
-        x+=a
+    while(x<0):
+        x+=c
     y = y1 * (C//gcd)
-    if(y<=0):
-        y+=c
+    while(y<0):
+        y+=a
     return(0,x,y)
   else:
     return(-2,0,0)#print("Solution not possible") 
@@ -181,7 +181,7 @@ def moddicts(intlist):
                 partitionvalue=2**len(primelist)
                 for partitionscheme in range(1,partitionvalue):
                     partitionproduct=1
-                    scheme=trans(partitionscheme)
+                    scheme=binarysplit(partitionscheme)
                     #print(partitionscheme,scheme)
                     for pos in range(0,len(scheme)):
                         if(scheme[pos]):
@@ -255,6 +255,42 @@ def primekproduct(d):
     return klist
  
 
+
+def primedisjointproduct(d):
+    klist=list()
+    klist.append(dict())
+    klist.append(dict())
+    klist[0]['listofkprimes']=list()
+    klist[0]['primeproduct']=1
+    klist[1]['listofkprimes']=list()
+    klist[1]['primeproduct']=1
+    primegenerator = primegen()
+    rootd=(d**.5)//1
+    rootdthird=((rootd/(3**.5))**.5)//1
+    #primeproduct=1
+    #listofkprimes=list()
+    prime1=next(primegenerator)
+    prime2=next(primegenerator)
+    klist[0]['primeproduct']*=prime1
+    klist[0]['listofkprimes'].append(prime1)
+    while klist[0]['primeproduct']*prime2 < rootdthird:
+        klist[0]['primeproduct']*=prime2
+        klist[0]['listofkprimes'].append(prime2)
+        prime1=prime2
+        prime2=next(primegenerator)
+    prime1=prime2
+    prime2=next(primegenerator)
+    klist[1]['primeproduct']*=prime1
+    klist[1]['listofkprimes'].append(prime1)
+    while klist[1]['primeproduct']*prime2 < rootdthird:
+        klist[1]['primeproduct']*=prime2
+        klist[1]['listofkprimes'].append(prime2)
+        prime1=prime2
+        prime2=next(primegenerator)
+    #print(klist)
+    return klist
+
+
 """
     multiplier=0
     while(klist[1][listofkprimes][multiplier]*start<rootdthird):
@@ -277,8 +313,9 @@ def primekproduct(d):
 
 if __name__ == "__main__":
     product=4049*6091
+    print(product,product**.5,product**.5/3**.5)
     print(product%6,4049%6,6091%6,product%10,4049%10,6091%10,4049%60,6091%60)
-    klist=primekproduct(product)
+    klist=primedisjointproduct(product)
     #print(factors(product%klist[0]['primeproduct'],klist[0]['primeproduct'],klist[0]['listofkprimes']))
     #print(factors(product%klist[1]['primeproduct'],klist[1]['primeproduct'],klist[1]['listofkprimes']))
     klist[0]['factors']=factors(product%klist[0]['primeproduct'],klist[0]['primeproduct'],klist[0]['listofkprimes'])
@@ -289,18 +326,31 @@ if __name__ == "__main__":
     #print(klist[1]['factors'])
     #print(klist[0]['primeproduct'])
     #print(klist[1]['primeproduct'])
+    #print(klist)
     factorfunctions1=dict()
-    factorfunctions2=dict()
+    factorfunctions2=list()
     for factor1 in klist[0]['factors'][(klist[0]['primeproduct'],product%klist[0]['primeproduct'])]:
         #print(factor1)
         for factor2 in klist[1]['factors'][(klist[1]['primeproduct'],product%klist[1]['primeproduct'])]:
             #print(factor2)
-            factorfunctions1[(factor1,factor2)]=(diophantine(klist[0]['primeproduct'],factor1,klist[0]['primeproduct'],factor2))    
+            #print(factor1,factor2)
+            #print(klist[0]['primeproduct'],factor1,klist[1]['primeproduct'],factor2)
+            factorfunctions1[(factor1,factor2)]=(diophantine(klist[0]['primeproduct'],factor1,klist[1]['primeproduct'],factor2))    
+            #print(factorfunctions1[(factor1,factor2)])
+    count=0
     for factorfunction in factorfunctions1.keys():
         if factorfunctions1[factorfunction][0]==0:
+            print(klist[0]['primeproduct'],klist[1]['primeproduct'])
             print(factorfunction)
             print(factorfunctions1[factorfunction])
+            print(klist[0]['primeproduct'],'* x +',factorfunction[0],'=',klist[1]['primeproduct'],'* y +',factorfunction[1])
+            print(klist[0]['primeproduct'],'* (',klist[1]['primeproduct'],'* x +',factorfunctions1[factorfunction][1],') +',factorfunction[0],'=',
+                  klist[1]['primeproduct'],'* (',klist[0]['primeproduct'],'* y +',factorfunctions1[factorfunction][2],') +',factorfunction[1])
             
+            #factorfunctions2.append((divisor1,divisor2,factorfunction[1],product%divisor1))
+            #factorfunctions2.append((divisor2,divisor1,factorfunction[2],product%divisor2))
+            count +=1
+    print(count)
         
 
 
