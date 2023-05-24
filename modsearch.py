@@ -279,11 +279,29 @@ if __name__ == "__main__":
     product=4049*6091
     print(product%6,4049%6,6091%6,product%10,4049%10,6091%10,4049%60,6091%60)
     klist=primekproduct(product)
-    print(factors(product%klist[0]['primeproduct'],klist[0]['primeproduct'],klist[0]['listofkprimes']))
-    print(factors(product%klist[1]['primeproduct'],klist[1]['primeproduct'],klist[1]['listofkprimes']))
+    #print(factors(product%klist[0]['primeproduct'],klist[0]['primeproduct'],klist[0]['listofkprimes']))
+    #print(factors(product%klist[1]['primeproduct'],klist[1]['primeproduct'],klist[1]['listofkprimes']))
     klist[0]['factors']=factors(product%klist[0]['primeproduct'],klist[0]['primeproduct'],klist[0]['listofkprimes'])
     klist[1]['factors']=factors(product%klist[1]['primeproduct'],klist[1]['primeproduct'],klist[1]['listofkprimes'])
-    print(klist)
+    #print(klist[0]['listofkprimes'])
+    #print(klist[1]['listofkprimes'])
+    #print(klist[0]['factors'])
+    #print(klist[1]['factors'])
+    #print(klist[0]['primeproduct'])
+    #print(klist[1]['primeproduct'])
+    factorfunctions1=dict()
+    factorfunctions2=dict()
+    for factor1 in klist[0]['factors'][(klist[0]['primeproduct'],product%klist[0]['primeproduct'])]:
+        #print(factor1)
+        for factor2 in klist[1]['factors'][(klist[1]['primeproduct'],product%klist[1]['primeproduct'])]:
+            #print(factor2)
+            factorfunctions1[(factor1,factor2)]=(diophantine(klist[0]['primeproduct'],factor1,klist[0]['primeproduct'],factor2))    
+    for factorfunction in factorfunctions1.keys():
+        if factorfunctions1[factorfunction][0]==0:
+            print(factorfunction)
+            print(factorfunctions1[factorfunction])
+            
+        
 
 
 
