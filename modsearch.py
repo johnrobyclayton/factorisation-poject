@@ -312,7 +312,7 @@ def primedisjointproduct(d):
 """
 
 if __name__ == "__main__":
-    product=4049*6091
+    product=533149*1005019
     print(product,product**.5,product**.5/3**.5)
     print(product%6,4049%6,6091%6,product%10,4049%10,6091%10,4049%60,6091%60)
     klist=primedisjointproduct(product)
@@ -338,20 +338,24 @@ if __name__ == "__main__":
             factorfunctions1[(factor1,factor2)]=(diophantine(klist[0]['primeproduct'],factor1,klist[1]['primeproduct'],factor2))    
             #print(factorfunctions1[(factor1,factor2)])
     count=0
+    addlist=list()
     for factorfunction in factorfunctions1.keys():
         if factorfunctions1[factorfunction][0]==0:
-            print(klist[0]['primeproduct'],klist[1]['primeproduct'])
-            print(factorfunction)
-            print(factorfunctions1[factorfunction])
-            print(klist[0]['primeproduct'],'* x +',factorfunction[0],'=',klist[1]['primeproduct'],'* y +',factorfunction[1])
-            print(klist[0]['primeproduct'],'* (',klist[1]['primeproduct'],'* x +',factorfunctions1[factorfunction][1],') +',factorfunction[0],'=',
-                  klist[1]['primeproduct'],'* (',klist[0]['primeproduct'],'* y +',factorfunctions1[factorfunction][2],') +',factorfunction[1])
-            
+            #print(klist[0]['primeproduct'],klist[1]['primeproduct'])
+            #print(factorfunction)
+            #print(factorfunctions1[factorfunction])
+            #print(klist[0]['primeproduct'],'* x +',factorfunction[0],'=',klist[1]['primeproduct'],'* y +',factorfunction[1])
+            #print(klist[0]['primeproduct'],'* (',klist[1]['primeproduct'],'* x +',factorfunctions1[factorfunction][1],') +',factorfunction[0],'=',
+            #      klist[1]['primeproduct'],'* (',klist[0]['primeproduct'],'* y +',factorfunctions1[factorfunction][2],') +',factorfunction[1])
+            addlist.append(klist[0]['primeproduct']*factorfunctions1[factorfunction][1]+factorfunction[0])
             #factorfunctions2.append((divisor1,divisor2,factorfunction[1],product%divisor1))
             #factorfunctions2.append((divisor2,divisor1,factorfunction[2],product%divisor2))
             count +=1
-    print(count)
-        
+    #print(count)
+    #print(product,product**.5,product**.5/3**.5,(product**.5-product**.5/3**.5)/(klist[0]['primeproduct']*klist[1]['primeproduct'])*count)
+    print(sorted(addlist))
+    print(len(addlist))
+    
 
 
 
