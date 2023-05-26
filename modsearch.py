@@ -300,14 +300,18 @@ def primemoddiff(p,m):
     return toreturn
 
 def combinedifflists(firstdifflist,seconddifflist):
+    print('fs',firstdifflist,seconddifflist)
     returndifflistkey=firstdifflist[0]*seconddifflist[0]
     returndifflist=list()
+    returndifflist.append(0)
+    print('fs1',firstdifflist[1])
     for firstdiff in firstdifflist[1]:
         for seconddiff in seconddifflist[1]:
             diofresult=diophantine(firstdifflist[0],firstdiff,seconddifflist[0],seconddiff)
-            print(diofresult)
+            #print(diofresult)
             if(diofresult[0]==0):
-                returndifflist=
+                print(firstdifflist[0],firstdiff,seconddifflist[0],seconddiff,diofresult)
+                returndifflist.append(1)
     return(returndifflistkey,returndifflist)
 
 
@@ -327,20 +331,30 @@ if __name__ == "__main__":
         primeproduct*=prime
         prime=next(primegenerator)
     
-    print(diffdict) 
+    #print(diffdict) 
     primedifflist=list()
+    
     for key in sorted(diffdict.keys(),reverse=True):
         primedifflist.append(key)
+    
+    #print('primedifflist',primedifflist)
     difflistkey=primedifflist.pop()
+    #print(difflistkey,primedifflist)
+    
     combineddifflist=(difflistkey,diffdict[difflistkey])
+    #print(combineddifflist)
+    
     while primedifflist:
         difflistkey=primedifflist.pop()
+        #print(difflistkey,primedifflist)
         nextdifflist=(difflistkey,diffdict[difflistkey])
-        print('interim',combineddifflist,nextdifflist)
+        #print(nextdifflist)
+        #print('interim',combineddifflist,nextdifflist)
         combineddifflist=combinedifflists(combineddifflist,nextdifflist)
-        
+        print('comb',combineddifflist)
+    """    
     print(combineddifflist)
-
+    """
 
 
 
