@@ -290,6 +290,59 @@ def primedisjointproduct(d):
     #print(klist)
     return klist
 
+def primemoddiff(p,m):
+    toreturn=set()
+    for i in range(1,p):
+        for j in range(1,p):
+            if (i*j)%p==m:
+                toreturn.add((p-i+j)%p)
+                toreturn.add((p-j+i)%p)
+    return toreturn
+
+def combinedifflists(firstdifflist,seconddifflist):
+    returndifflistkey=firstdifflist[0]*seconddifflist[0]
+    returndifflist=list()
+    for firstdiff in firstdifflist[1]:
+        for seconddiff in seconddifflist[1]:
+            diofresult=diophantine(firstdifflist[0],firstdiff,seconddifflist[0],seconddiff)
+            print(diofresult)
+            if(diofresult[0]==0):
+                returndifflist=
+    return(returndifflistkey,returndifflist)
+
+
+if __name__ == "__main__":
+    product=533149*1005019
+    root4d=(product**.33)//1
+    primegenerator = primegen()
+    primeproduct=1
+    lenlist=1
+    prime=next(primegenerator)#2
+    prime=next(primegenerator)#3
+    #prime=next(primegenerator)#5
+    diffdict=dict()
+    while primeproduct<root4d:
+        difflist=list(sorted(primemoddiff(prime,product%prime)))
+        diffdict[prime]=difflist
+        primeproduct*=prime
+        prime=next(primegenerator)
+    
+    print(diffdict) 
+    primedifflist=list()
+    for key in sorted(diffdict.keys(),reverse=True):
+        primedifflist.append(key)
+    difflistkey=primedifflist.pop()
+    combineddifflist=(difflistkey,diffdict[difflistkey])
+    while primedifflist:
+        difflistkey=primedifflist.pop()
+        nextdifflist=(difflistkey,diffdict[difflistkey])
+        print('interim',combineddifflist,nextdifflist)
+        combineddifflist=combinedifflists(combineddifflist,nextdifflist)
+        
+    print(combineddifflist)
+
+
+
 
 """
     multiplier=0
@@ -310,7 +363,7 @@ def primedisjointproduct(d):
     #print('try2',nextp)
     listoflprimes.append(nextp)
 """
-
+"""
 if __name__ == "__main__":
     product=533149*1005019
     print(product,product**.5,product**.5/3**.5)
@@ -357,7 +410,7 @@ if __name__ == "__main__":
     print(len(addlist))
     
 
-
+"""
 
 """
 
