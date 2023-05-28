@@ -1,8 +1,6 @@
 import primefac
 import pprint
 import math
-import decimal
-from decimal import Decimal
 #print(list(primefac.primefac(2999999)))
 pp=pprint.PrettyPrinter(indent=2)
 def binarysplit(x):
@@ -390,7 +388,6 @@ if __name__ == "__main__":
     #print(sorted(oddlist))
     while not found and mul*combineddifflist[0]<product:
         #print(mul)
-        """
         if mul&0:
             for add in evenlist:
                 diff= combineddifflist[0]*mul+add
@@ -412,41 +409,6 @@ if __name__ == "__main__":
                         print('factors:',candidate+halfdiff,candidate-halfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'nummuls',len(combineddifflist[1])/2)
                         found=True
                         break
-                        
-        """                
-        if mul&0:
-            for add in evenlist:
-                diff= combineddifflist[0]*mul+add
-                halfdiff=diff/2
-                dechalfdiff=Decimal(halfdiff)
-                decproduct=Decimal(product)
-                deccandidate=Decimal()
-                deccandidate =(dechalfdiff**2+decproduct)**Decimal('.5')
-                if deccandidate == math.trunc(deccandidate):
-                    if (deccandidate+dechalfdiff)*(deccandidate-dechalfdiff)==decproduct:
-                        print('factors:',deccandidate+dechalfdiff,deccandidate-dechalfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'nummuls',len(combineddifflist[1])/2)
-                        found=True
-                        break
-        else:
-            for add in oddlist:
-                diff= combineddifflist[0]*mul+add
-                halfdiff=diff/2
-                dechalfdiff = Decimal(halfdiff)
-                decproduct=Decimal(product)
-                deccandidate=Decimal()
-                deccandidate =(dechalfdiff**2+decproduct)**Decimal('.5')
-                #print(diff,halfdiff,candidate)
-                if deccandidate == math.trunc(deccandidate):
-                    if (deccandidate+dechalfdiff)*(deccandidate-dechalfdiff)==decproduct:
-                        print('factors:',deccandidate+dechalfdiff,deccandidate-dechalfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'nummuls',len(combineddifflist[1])/2)
-                        found=True
-                        break
-                        
-                        
-                        
-                        
-                        
-                        
                         
         if found:
             break
