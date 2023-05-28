@@ -1,8 +1,10 @@
 import primefac
 import pprint
+import math
+import decimal
+from decimal import Decimal
 #print(list(primefac.primefac(2999999)))
 pp=pprint.PrettyPrinter(indent=2)
-
 def binarysplit(x):
     if x == 0: return [0]
     bit = []
@@ -41,9 +43,13 @@ def diophantine(a,b,c,d):
     x = x1 * (C//gcd)
     while(x<0):
         x+=c
+    while(x>c):
+        x-=c
     y = y1 * (C//gcd)
     while(y<0):
         y+=a
+    while(y>a):
+        y-=a
     return(0,x,y)
   else:
     return(-2,0,0)#print("Solution not possible") 
@@ -300,37 +306,57 @@ def primemoddiff(p,m):
     return toreturn
 
 def combinedifflists(firstdifflist,seconddifflist):
-    print('fs',firstdifflist,seconddifflist)
+    #print('fs',firstdifflist,seconddifflist)
     returndifflistkey=firstdifflist[0]*seconddifflist[0]
     returndifflist=list()
-    returndifflist.append(0)
-    print('fs1',firstdifflist[1])
+    #returndifflist.append(0)
+    #print('fs1',firstdifflist[1])
+    #print('se1',seconddifflist[1])
     for firstdiff in firstdifflist[1]:
         for seconddiff in seconddifflist[1]:
-            diofresult=diophantine(firstdifflist[0],firstdiff,seconddifflist[0],seconddiff)
-            #print(diofresult)
+            a=firstdifflist[0]
+            b=firstdiff
+            c=seconddifflist[0]
+            d=seconddiff
+            #diofresult=diophantine(firstdifflist[0],firstdiff,seconddifflist[0],seconddiff)
+            diofresult=diophantine(a,b,c,d)
+            #print('difresult',diofresult)
+            #print(firstdifflist[0]*diofresult[1]+firstdiff,
+            #      seconddifflist[0]*diofresult[2]+seconddiff)
+            #print(a*diofresult[1]+b,
+            #      c*diofresult[2]+d)
             if(diofresult[0]==0):
-                print(firstdifflist[0],firstdiff,seconddifflist[0],seconddiff,diofresult)
-                returndifflist.append(1)
+                #print(firstdifflist[0],firstdiff,seconddifflist[0],seconddiff,diofresult)
+                returndifflist.append(a*diofresult[1]+b)
+    #print(returndifflist)
     return(returndifflistkey,returndifflist)
-
+#(a,b,c,d)=(3,0,5,4)
+#diofresult=diophantine(3,0,5,4)
+#print(diofresult,a*diofresult[1]+b, c*diofresult[2]+d)
+#main
 
 if __name__ == "__main__":
-    product=533149*1005019
-    root4d=(product**.33)//1
+    p=123456791
+    q=233460431
+    p=21345703
+    q=12345701
+    product=p*q
+    root4d=(product**.3)//1
     primegenerator = primegen()
     primeproduct=1
     lenlist=1
     prime=next(primegenerator)#2
     prime=next(primegenerator)#3
-    #prime=next(primegenerator)#5
+    #prime=4
     diffdict=dict()
     while primeproduct<root4d:
         difflist=list(sorted(primemoddiff(prime,product%prime)))
         diffdict[prime]=difflist
         primeproduct*=prime
+        #prime+=1
         prime=next(primegenerator)
-    
+    #print(moddict)    
+    #print(pqmoddiffdict)
     #print(diffdict) 
     primedifflist=list()
     
@@ -351,10 +377,86 @@ if __name__ == "__main__":
         #print(nextdifflist)
         #print('interim',combineddifflist,nextdifflist)
         combineddifflist=combinedifflists(combineddifflist,nextdifflist)
-        print('comb',combineddifflist)
-    """    
+    oddlist=list()
+    evenlist=list()
+    for element in sorted(combineddifflist[1]):
+        if element&1:
+            oddlist.append(element)
+        else:
+            evenlist.append(element)
+    found=False
+    mul=0
+    print('1',combineddifflist[0],combineddifflist[1])
+    #print(sorted(oddlist))
+    while not found and mul*combineddifflist[0]<product:
+        #print(mul)
+        """
+        if mul&0:
+            for add in evenlist:
+                diff= combineddifflist[0]*mul+add
+                halfdiff=diff/2
+                candidate =(halfdiff**2+product)**.5
+                if candidate == math.trunc(candidate):
+                    if (candidate+halfdiff)*(candidate-halfdiff)==product:
+                        print('factors:',candidate+halfdiff,candidate-halfdiff)
+                        found=True
+                        break
+        else:
+            for add in oddlist:
+                diff= combineddifflist[0]*mul+add
+                halfdiff=diff/2
+                candidate =(halfdiff**2+product)**.5
+                #print(diff,halfdiff,candidate)
+                if candidate == math.trunc(candidate):
+                    if (candidate+halfdiff)*(candidate-halfdiff)==product:
+                        print('factors:',candidate+halfdiff,candidate-halfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'nummuls',len(combineddifflist[1])/2)
+                        found=True
+                        break
+                        
+        """                
+        if mul&0:
+            for add in evenlist:
+                diff= combineddifflist[0]*mul+add
+                halfdiff=diff/2
+                dechalfdiff=Decimal(halfdiff)
+                decproduct=Decimal(product)
+                deccandidate=Decimal()
+                deccandidate =(dechalfdiff**2+decproduct)**Decimal('.5')
+                if deccandidate == math.trunc(deccandidate):
+                    if (deccandidate+dechalfdiff)*(deccandidate-dechalfdiff)==decproduct:
+                        print('factors:',deccandidate+dechalfdiff,deccandidate-dechalfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'nummuls',len(combineddifflist[1])/2)
+                        found=True
+                        break
+        else:
+            for add in oddlist:
+                diff= combineddifflist[0]*mul+add
+                halfdiff=diff/2
+                dechalfdiff = Decimal(halfdiff)
+                decproduct=Decimal(product)
+                deccandidate=Decimal()
+                deccandidate =(dechalfdiff**2+decproduct)**Decimal('.5')
+                #print(diff,halfdiff,candidate)
+                if deccandidate == math.trunc(deccandidate):
+                    if (deccandidate+dechalfdiff)*(deccandidate-dechalfdiff)==decproduct:
+                        print('factors:',deccandidate+dechalfdiff,deccandidate-dechalfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'nummuls',len(combineddifflist[1])/2)
+                        found=True
+                        break
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+        if found:
+            break
+        mul+=1
+                
+            
+
+"""    
     print(combineddifflist)
-    """
+"""
 
 
 
@@ -426,18 +528,18 @@ if __name__ == "__main__":
 
 """
 
-"""
 
+"""
 
 if __name__ == "__main__":
     product=144871
     divisor1=30
     divisor2=42
-    factordict=factors(divisor1)
+    factordict=factors(product%divisor1,divisor1,[2,3,5])
     trialdict=dict()
     for key in factordict.keys():
         trialdict[key]=factordict[key]
-    factordict=factors(divisor2)
+    factordict=factors(product%divisor2,divisor2,[2,3,5,7])
     for key in factordict.keys():
         trialdict[key]=factordict[key]
     for key in trialdict.keys():
@@ -462,9 +564,9 @@ if __name__ == "__main__":
         if(factorfunctions1[factorfunction][0]==0):
             print(factorfunction)
             print(factorfunctions1[factorfunction])
-        #for function in factorfunction.keys():
-            #if function[0]==0:
-                #print(factorfunction.key(),function)
+        for function in factorfunction.keys():
+            if function[0]==0:
+                print(factorfunction.key(),function)
             #print(factorfunctions1[factorfunctions])
             #factorfunctions2.append((divisor1,divisor2,factorfunction[1],product%divisor1))
             #factorfunctions2.append((divisor2,divisor1,factorfunction[2],product%divisor2))
@@ -473,6 +575,7 @@ if __name__ == "__main__":
         #print(factorfunction)
         #print(factorfunction[0],'* (',factorfunction[1],'+',factorfunction[2],') +',factorfunction[3])
         #print(factorfunction[0]* factorfunction[1],'* x +',factorfunction[0]*factorfunction[2]+factorfunction[3])
+
 """
 """
     trialdict=list()     
