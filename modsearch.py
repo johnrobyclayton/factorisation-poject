@@ -345,8 +345,13 @@ if __name__ == "__main__":
     q=1234567891
     p=12345678923
     q=21345678929
+    p=123456789133
+    q=213456789127
+    p=1234516789133
+    q=2134516789127
+
     product=p*q
-    root4d=(product**(1/3))//1
+    root4d=(product**(1/4))//1
     primegenerator = primegen()
     primeproduct=1
     lenlist=1
@@ -358,14 +363,16 @@ if __name__ == "__main__":
     pqmoddiffdict=dict()
     while primeproduct<root4d:
         difflist=list(sorted(primemoddiff(prime,product%prime)))
-        diffdict[prime]=difflist
+        if len(difflist)<(prime+1)//2 :
+            diffdict[prime]=difflist
+            primeproduct*=prime
         #moddict[prime]=[product%prime,p%prime,q%prime]
         #pqmoddiffdict[prime]=((((p-q)**2)**.5)//1)%prime
-        primeproduct*=prime
+        
         prime=next(primegenerator)
     #print('moddict',moddict)    
     #print('pqmoddict',pqmoddiffdict)
-    #print('diffdict',diffdict) 
+    print('diffdict',diffdict) 
     primedifflist=list()
     
     for key in sorted(diffdict.keys(),reverse=True):
@@ -373,20 +380,20 @@ if __name__ == "__main__":
     
     #print('primedifflist',primedifflist)
     difflistkey=primedifflist.pop()
-    print('popped1',difflistkey,primedifflist)
+    #print('popped1',difflistkey,primedifflist)
     
     combineddifflist=(difflistkey,diffdict[difflistkey])
     #print('combineddifflist1',combineddifflist)
     
     while primedifflist:
         difflistkey=primedifflist.pop()
-        print('popped2',difflistkey,primedifflist)
+        #print('popped2',difflistkey,primedifflist)
         nextdifflist=(difflistkey,diffdict[difflistkey])
         #print('nextdifflist',nextdifflist)
         #print('interim',combineddifflist,nextdifflist)
         combineddifflist=combinedifflists(combineddifflist,nextdifflist)
         #print('combineddifflist',combineddifflist)
-
+    print('combineddifflist',combineddifflist[0])
     oddlist=list()
     evenlist=list()
     for element in sorted(combineddifflist[1]):
@@ -402,7 +409,7 @@ if __name__ == "__main__":
     #print('one',combineddifflist[0],combineddifflist[1])
     #print(sorted(oddlist))
     while not found and mul*combineddifflist[0]<product:
-        print(mul)
+        #print(mul)
         if (mul%2)==0:
             #if mul==22:
             #    print(evenlist)
@@ -415,7 +422,7 @@ if __name__ == "__main__":
                 #    print(Decimal(candidate+halfdiff),Decimal(candidate-halfdiff),Decimal(candidate+halfdiff)*Decimal(candidate-halfdiff))
                 if candidate == math.trunc(candidate):
                     if Decimal(candidate+halfdiff)*Decimal(candidate-halfdiff)==Decimal(product):
-                        print('factors:',candidate+halfdiff,candidate-halfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'add',add,'nummuls',len(evenlist),len(oddlist),len(evenlist)/combineddifflist[0])
+                        print('factorsE:',candidate+halfdiff,candidate-halfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'add',add,'nummuls',len(evenlist),len(oddlist),len(evenlist)/combineddifflist[0])
                         found=True
                         break
         else:
@@ -428,7 +435,7 @@ if __name__ == "__main__":
                 #print(diff,halfdiff,candidate)
                 if candidate == math.trunc(candidate):
                     if Decimal(candidate+halfdiff)*Decimal(candidate-halfdiff)==Decimal(product):
-                        print('factors:',candidate+halfdiff,candidate-halfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'add',add,'nummuls',len(evenlist),len(oddlist),len(oddlist)/combineddifflist[0])
+                        print('factorsO:',candidate+halfdiff,candidate-halfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'add',add,'nummuls',len(evenlist),len(oddlist),len(oddlist)/combineddifflist[0])
                         found=True
                         break
                         
