@@ -296,7 +296,7 @@ def primedisjointproduct(d):
     #print(klist)
     return klist
 
-def factormoddiff(p,m,f):
+def factormoddiff(p,m):
     toreturn=set()
     returnfilter=set()
     for i in range(1,p):
@@ -306,11 +306,10 @@ def factormoddiff(p,m,f):
                 toreturn.add((p-j+i)%p)
     for i in range(1,p):
         for j in range(1,p):
-            if (i*j)%p==f:
+            if (i*j)%p==m:
                 toreturn.add((p-i+j)%p)
                 toreturn.add((p-j+i)%p)
-    return toreturn.intersection(returnfilter)
-
+    return toreturn
 
 def combinedifflists(firstdifflist,seconddifflist):
     #print('fs',firstdifflist,seconddifflist)
@@ -356,6 +355,8 @@ if __name__ == "__main__":
     q=213456789127
     p=1234516789133
     q=2134516789127
+    p=123456791
+    q=233460431
 
     product=p*q
     root4d=(product**(1/4))//1
@@ -369,7 +370,7 @@ if __name__ == "__main__":
     moddict=dict()
     pqmoddiffdict=dict()
     while primeproduct<root4d:
-        difflist=list(sorted(factormoddiff(prime,product%prime,(product**2)%prime)))
+        difflist=list(sorted(factormoddiff(prime,product%prime)))
         if len(difflist)<(prime+1)//2 :
             diffdict[prime]=difflist
             primeproduct*=prime
