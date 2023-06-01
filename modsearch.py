@@ -54,7 +54,7 @@ def diophantine(a,b,c,d):
   else:
     return(-2,0,0)#print("Solution not possible") 
 
-def primegen():
+def primegenhide():
     listofprimes=list()
     if len(listofprimes)==0:
         listofprimes.append(2)
@@ -71,6 +71,22 @@ def primegen():
         listofprimes.append(nextstart)
         yield listofprimes[-1]
 
+def primegenhide():
+    listofprimes=list()
+    if len(listofprimes)==0:
+        listofprimes.append(2)
+        yield listofprimes[-1]
+    def isprime(listofprimes,isit):
+        for x in listofprimes:
+            if isit%x==0:
+                return False
+        return True
+    while True:
+        nextstart=listofprimes[-1]+1
+        while not isprime(listofprimes,nextstart):
+            nextstart+=1
+        listofprimes.append(nextstart)
+        yield listofprimes[-1]
 
 
 '''
