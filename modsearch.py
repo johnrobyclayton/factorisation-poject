@@ -125,19 +125,53 @@ for each product add a multiple of a to get p or q
 
 
 
-def factormoddiff(p,m):
+def binarysplit(x):
+    if x == 0: return [0]
+    bit = []
+    while x:
+        bit.append(x % 2)
+        x >>= 1
+    return bit[::-1]
+
+def factormoddiff(divisor,modulus):
+    #initialise dictionary to return
     toreturn=set()
-    returnfilter=set()
-    for i in range(1,p):
-        for j in range(1,p):
-            if (i*j)%p==m:
-                toreturn.add((p-i+j)%p)
-                toreturn.add((p-j+i)%p)
-    for i in range(1,p):
-        for j in range(1,p):
-            if (i*j)%p==m:
-                toreturn.add((p-i+j)%p)
-                toreturn.add((p-j+i)%p)
+    
+    #The multiple of the divisor
+    multiple=0
+    #print('divisor ',i,' modulus ',j)
+    while (divisor*multiple+modulus<divisor**2):
+        #candidate modulus product
+        candidate=divisor*multiple+modulus
+        #get prime factorisation of candidate
+        primelist=list(primefac.primefac(candidate))
+        CandidatePasses=True
+        if GCD(candidate,divisor)[0]!=1:
+            CandidatePasses=False
+        if CandidatePasses:
+            for eachprime in primelist:
+                if eachprime>=divisor:
+                    CandidatePasses=False
+        #get the number of primes in the candidate prime factorisation
+        lenlist=len(primelist)
+        #use binary split of the list of primes
+        #For each binary split of the prime list get the product of the partition
+        partitionvalue=2**len(primelist)
+        for partitionscheme in range(1,partitionvalue):
+            partitionproduct=1
+            scheme=binarysplit(partitionscheme)
+            #print(partitionscheme,scheme)
+            for pos in range(0,len(scheme)):
+                if(scheme[pos]):
+                    partitionproduct*=primelist[pos]
+            
+            if(partitionproduct<=divisor and candidate/partitionproduct<=divisor and CandidatePasses):
+                #moddict[(i,j)].add((partitionproduct*candidate//partitionproduct,partitionproduct,candidate//partitionproduct))
+                toreturn.add((divisor-partitionproduct+candidate//partitionproduct)%divisor)
+                toreturn.add((divisor-candidate//partitionproduct+partitionproduct)%divisor)
+        
+        multiple+=1
+    #print (toreturn)
     return toreturn
 
 def combinedifflists(firstdifflist,seconddifflist):
@@ -189,25 +223,23 @@ if __name__ == "__main__":
     q=233460431
 
     product=p*q
+    print(product)
     root4d=(product**(1/4))//1
     compositegenerator = trianglefac()
+'''
     compositeproduct=1
-    lenlist=1
-    composite=next(compositegenerator)#2
-    composite=next(compositegenerator)#12
-    composite=next(compositegenerator)#360
-    composite=next(compositegenerator)#360
+    primeindex=0
+    while compositeproduct<root4d:
+        composite=next(compositegenerator)#2
+        primeindex+=1
+    print(composite,primeindex)
     
     diffdict=dict()
-    moddict=dict()
-    pqmoddiffdict=dict()
-    power=1
     
-    diffdict=(composite,list(sorted(factormoddiff(composite,product%composite))))
+    diffdict[(compositeproduct%composite)]=list(sorted(factormoddiff(composite,product%composite)))
     print(diffdict)
-    combineddifflist=diffdict
-    print(combineddifflist)
-    """
+
+    """    
     while compositeproduct<root4d:
         
         #diffdict[composite]=difflist
@@ -291,4 +323,5 @@ if __name__ == "__main__":
             break
         mul+=1
         #print('mul',mul,combineddifflist[0],mul*combineddifflist[0],product,q-p)
-    """                
+    """
+'''

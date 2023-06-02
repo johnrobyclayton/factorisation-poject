@@ -295,7 +295,7 @@ def primedisjointproduct(d):
         prime2=next(primegenerator)
     #print(klist)
     return klist
-
+"""
 def factormoddiff(p,m):
     toreturn=set()
     returnfilter=set()
@@ -310,6 +310,50 @@ def factormoddiff(p,m):
                 toreturn.add((p-i+j)%p)
                 toreturn.add((p-j+i)%p)
     return toreturn
+
+"""
+def factormoddiff(divisor,modulus):
+    #initialise dictionary to return
+    toreturn=set()
+    
+    #The multiple of the divisor
+    multiple=0
+    #print('divisor ',i,' modulus ',j)
+    while (divisor*multiple+modulus<divisor**2):
+        #candidate modulus product
+        candidate=divisor*multiple+modulus
+        #get prime factorisation of candidate
+        primelist=list(primefac.primefac(candidate))
+        CandidatePasses=True
+        if GCD(candidate,divisor)[0]!=1:
+            CandidatePasses=False
+        if CandidatePasses:
+            for eachprime in primelist:
+                if eachprime>=divisor:
+                    CandidatePasses=False
+        #get the number of primes in the candidate prime factorisation
+        lenlist=len(primelist)
+        #use binary split of the list of primes
+        #For each binary split of the prime list get the product of the partition
+        partitionvalue=2**len(primelist)
+        for partitionscheme in range(1,partitionvalue):
+            partitionproduct=1
+            scheme=binarysplit(partitionscheme)
+            #print(partitionscheme,scheme)
+            for pos in range(0,len(scheme)):
+                if(scheme[pos]):
+                    partitionproduct*=primelist[pos]
+            
+            if(partitionproduct<=divisor and candidate/partitionproduct<=divisor and CandidatePasses):
+                #moddict[(i,j)].add((partitionproduct*candidate//partitionproduct,partitionproduct,candidate//partitionproduct))
+                toreturn.add((divisor-partitionproduct+candidate//partitionproduct)%divisor)
+                toreturn.add((divisor-candidate//partitionproduct+partitionproduct)%divisor)
+        
+        multiple+=1
+    #print (toreturn)
+    return toreturn
+
+
 
 def combinedifflists(firstdifflist,seconddifflist):
     #print('fs',firstdifflist,seconddifflist)
@@ -355,23 +399,24 @@ if __name__ == "__main__":
     q=213456789127
     p=1234516789133
     q=2134516789127
-    p=123456791
-    q=233460431
+    p=1234516789133
+    q=2134516789127
 
     product=p*q
-    root4d=(product**(1/4))//1
+    root4d=(product**(1/2.6))//1
     primegenerator = primegen()
     primeproduct=1
     lenlist=1
     prime=next(primegenerator)#2
-    prime=next(primegenerator)#3
+    prime=next(primegenerator)*2**5*5#3
+    primeproduct*=prime
     #prime=4
     diffdict=dict()
     moddict=dict()
     pqmoddiffdict=dict()
     while primeproduct<root4d:
         difflist=list(sorted(factormoddiff(prime,product%prime)))
-        if len(difflist)<(prime+1)//2 :
+        if len(difflist)<(prime+1)//2 or True :
             diffdict[prime]=difflist
             primeproduct*=prime
         #moddict[prime]=[product%prime,p%prime,q%prime]
@@ -418,7 +463,7 @@ if __name__ == "__main__":
     #print(sorted(oddlist))
     while not found and mul*combineddifflist[0]<product:
         #print(mul)
-        if (mul%2)==0:
+        if (mul%2)==0 or (combineddifflist[0]%2)==0:
             #if mul==22:
             #    print(evenlist)
             for add in evenlist:
