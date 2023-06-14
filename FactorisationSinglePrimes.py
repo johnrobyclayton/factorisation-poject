@@ -324,6 +324,8 @@ def factormoddiff(divisor,modulus):
         candidate=divisor*multiple+modulus
         #get prime factorisation of candidate
         primelist=list(primefac.primefac(candidate))
+        primelist.append(1)
+        primelist.append(1)
         CandidatePasses=True
         if GCD(candidate,divisor)[0]!=1:
             CandidatePasses=False
@@ -384,6 +386,15 @@ def combinedifflists(firstdifflist,seconddifflist):
 #(a,b,c,d)=(3,0,5,4)
 #diofresult=diophantine(3,0,5,4)
 #print(diofresult,a*diofresult[1]+b, c*diofresult[2]+d)
+
+def isqrt(n):
+    x = n
+    y = (x + 1) // 2
+    while y < x:
+        x = y
+        y = (x + n // x) // 2
+    return x
+
 #main
 
 if __name__ == "__main__":
@@ -399,31 +410,31 @@ if __name__ == "__main__":
     q=213456789127
     p=1234516789133
     q=2134516789127
-    p=1234516789133
-    q=2134516789127
+    p=21345703
+    q=12345701
 
     product=p*q
-    root4d=(product**(1/2.6))//1
+    root4d=isqrt((4*product)//3)
     primegenerator = primegen()
     primeproduct=1
     lenlist=1
     prime=next(primegenerator)#2
-    prime=next(primegenerator)*2**5*5#3
+    prime=next(primegenerator)*2#3
     primeproduct*=prime
     #prime=4
     diffdict=dict()
     moddict=dict()
     pqmoddiffdict=dict()
-    while primeproduct<root4d:
+    while primeproduct<root4d and prime<19:
         difflist=list(sorted(factormoddiff(prime,product%prime)))
         if len(difflist)<(prime+1)//2 or True :
             diffdict[prime]=difflist
             primeproduct*=prime
-        #moddict[prime]=[product%prime,p%prime,q%prime]
+        moddict[prime]=[product%prime,p%prime,q%prime]
         #pqmoddiffdict[prime]=((((p-q)**2)**.5)//1)%prime
         
         prime=next(primegenerator)
-    #print('moddict',moddict)    
+    print('moddict',moddict)    
     #print('pqmoddict',pqmoddiffdict)
     print('diffdict',diffdict) 
     primedifflist=list()
@@ -459,7 +470,7 @@ if __name__ == "__main__":
     
     mul=0
     #print('mul',mul,combineddifflist[0],mul*combineddifflist[0],product,q-p)
-    #print('one',combineddifflist[0],combineddifflist[1])
+    print('one',combineddifflist[0],combineddifflist[1])
     #print(sorted(oddlist))
     while not found and mul*combineddifflist[0]<product:
         #print(mul)
@@ -469,7 +480,7 @@ if __name__ == "__main__":
             for add in evenlist:
                 diff= combineddifflist[0]*mul+add
                 halfdiff=diff//2
-                candidate =(halfdiff**2+product)**.5
+                candidate =isqrt(halfdiff**2+product)
                 #if mul==22 and add==3307050:
                 #    print('halfdiff',halfdiff,'candidate',candidate)
                 #    print(Decimal(candidate+halfdiff),Decimal(candidate-halfdiff),Decimal(candidate+halfdiff)*Decimal(candidate-halfdiff))
@@ -484,7 +495,7 @@ if __name__ == "__main__":
                 halfdiff=diff//2
                 #if mul==22 and add==3307050:
                 #    print('halfdiff',halfdiff)
-                candidate =(halfdiff**2+product)**.5
+                candidate =isqrt(halfdiff**2+product)
                 #print(diff,halfdiff,candidate)
                 if candidate == math.trunc(candidate):
                     if Decimal(candidate+halfdiff)*Decimal(candidate-halfdiff)==Decimal(product):
