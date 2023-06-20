@@ -425,83 +425,88 @@ if __name__ == "__main__":
     diffdict=dict()
     moddict=dict()
     pqmoddiffdict=dict()
-    while primeproduct<root4d and prime<19:
+    while primeproduct<root4d and prime<12:
         difflist=list(sorted(factormoddiff(prime,product%prime)))
         if len(difflist)<(prime+1)//2 or True :
             diffdict[prime]=difflist
             primeproduct*=prime
         moddict[prime]=[product%prime,p%prime,q%prime]
-        #pqmoddiffdict[prime]=((((p-q)**2)**.5)//1)%prime
         
         prime=next(primegenerator)
     print('moddict',moddict)    
-    #print('pqmoddict',pqmoddiffdict)
     print('diffdict',diffdict) 
     primedifflist=list()
     
     for key in sorted(diffdict.keys(),reverse=True):
         primedifflist.append(key)
     
-    #print('primedifflist',primedifflist)
     difflistkey=primedifflist.pop()
-    #print('popped1',difflistkey,primedifflist)
     
     combineddifflist=(difflistkey,diffdict[difflistkey])
-    #print('combineddifflist1',combineddifflist)
     
     while primedifflist:
         difflistkey=primedifflist.pop()
-        #print('popped2',difflistkey,primedifflist)
         nextdifflist=(difflistkey,diffdict[difflistkey])
-        #print('nextdifflist',nextdifflist)
-        #print('interim',combineddifflist,nextdifflist)
         combineddifflist=combinedifflists(combineddifflist,nextdifflist)
-        #print('combineddifflist',combineddifflist)
-    print('combineddifflist',combineddifflist[0])
-    oddlist=list()
-    evenlist=list()
+    evenoelist=list()
+    eveneolist=list()
     for element in sorted(combineddifflist[1]):
-        if element%2==1:
-            oddlist.append(element)
+        if element%4==2:
+            eveneolist.append(element)
         else:
-            evenlist.append(element)
-    #print(evenlist)
+            evenoelist.append(element)
     found=False
     
     mul=0
     #print('mul',mul,combineddifflist[0],mul*combineddifflist[0],product,q-p)
-    print('one',combineddifflist[0],combineddifflist[1])
+    #print('one',combineddifflist[0],combineddifflist[1])
     #print(sorted(oddlist))
+    #print('mul',mul,combineddifflist[0],mul*combineddifflist[0],product,q-p)
+    #print('eveneolist',eveneolist)
+    #print('evenoelist',evenoelist)
     while not found and mul*combineddifflist[0]<product:
         #print(mul)
-        if (mul%2)==0 or (combineddifflist[0]%2)==0:
-            #if mul==22:
-            #    print(evenlist)
-            for add in evenlist:
+        #print(product%4,mul%2,q-p)
+        if product%4==1 and mul%2==1:
+            for add in eveneolist:
                 diff= combineddifflist[0]*mul+add
-                halfdiff=diff//2
+                halfdiff=int(diff//2)
                 candidate =isqrt(halfdiff**2+product)
-                #if mul==22 and add==3307050:
-                #    print('halfdiff',halfdiff,'candidate',candidate)
-                #    print(Decimal(candidate+halfdiff),Decimal(candidate-halfdiff),Decimal(candidate+halfdiff)*Decimal(candidate-halfdiff))
-                if candidate == math.trunc(candidate):
-                    if Decimal(candidate+halfdiff)*Decimal(candidate-halfdiff)==Decimal(product):
-                        print('factorsE:',candidate+halfdiff,candidate-halfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'add',add,'nummuls',len(evenlist),len(oddlist),len(evenlist)/combineddifflist[0])
-                        found=True
-                        break
-        else:
-            for add in oddlist:
+                if Decimal(candidate+halfdiff)*Decimal(candidate-halfdiff)==Decimal(product):
+                    print(eveneolist)
+                    print('%4=1%2-1eo factors:',candidate+halfdiff,candidate-halfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'add',add,'nummuls',len(eveneolist),len(eveneolist)/combineddifflist[0])
+                    found=True
+                    break
+        if product%4==1 and mul%2==0:
+            for add in evenoelist:
                 diff= combineddifflist[0]*mul+add
-                halfdiff=diff//2
-                #if mul==22 and add==3307050:
-                #    print('halfdiff',halfdiff)
+                halfdiff=int(diff//2)
                 candidate =isqrt(halfdiff**2+product)
-                #print(diff,halfdiff,candidate)
-                if candidate == math.trunc(candidate):
-                    if Decimal(candidate+halfdiff)*Decimal(candidate-halfdiff)==Decimal(product):
-                        print('factorsO:',candidate+halfdiff,candidate-halfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'add',add,'nummuls',len(evenlist),len(oddlist),len(oddlist)/combineddifflist[0])
-                        found=True
-                        break
+                if Decimal(candidate+halfdiff)*Decimal(candidate-halfdiff)==Decimal(product):
+                    print(evenoelist)
+                    print('%4=1%2=0oe factors:',candidate+halfdiff,candidate-halfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'add',add,'nummuls',len(evenoelist),len(evenoelist)/combineddifflist[0])
+                    found=True
+                    break
+        if product%4==3 and mul%2==0:
+            for add in eveneolist:
+                diff= combineddifflist[0]*mul+add
+                halfdiff=int(diff//2)
+                candidate =isqrt(halfdiff**2+product)
+                if Decimal(candidate+halfdiff)*Decimal(candidate-halfdiff)==Decimal(product) or add==343990:
+                    print(eveneolist)
+                    print('%4=3%2=0eo factors:',candidate+halfdiff,candidate-halfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'add',add,'nummuls',len(eveneolist),len(eveneolist)/combineddifflist[0])
+                    found=True
+                    break
+        if product%4==3 and mul%2==1:
+            for add in evenoelist:
+                diff= combineddifflist[0]*mul+add
+                halfdiff=int(diff//2)
+                candidate =isqrt(halfdiff**2+product)
+                if Decimal(candidate+halfdiff)*Decimal(candidate-halfdiff)==Decimal(product) or add==343990:
+                    print(evenoelist)
+                    print('%4=3%2=1oe factors:',candidate+halfdiff,candidate-halfdiff,'p',p,'q',q,'mul',mul,'multiplier',combineddifflist[0],'add',add,'nummuls',len(evenoelist),len(evenoelist)/combineddifflist[0])
+                    found=True
+                    break
                         
         if found:
             break
