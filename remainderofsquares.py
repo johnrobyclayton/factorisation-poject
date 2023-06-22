@@ -407,65 +407,48 @@ def generateModDictExport2(topprime):
         difflistdict['oe'][i]['modset']=set()
         difflistdict['oe'][i]['modset']=modsquarediffdict[difflistdict['oe'][i]['squaremod']]
     moddict=dict()
-    moddict['oe']=dict()
-    moddict['eo']=dict()
     moddict['primeproduct']=primeproduct
     moddict['cycle']=primeproduct*2
-    for i in range(1,primeproduct):
-        if GCD(i,primeproduct)[0]==1:
-            moddict['oe'][i]=set()
-            for j in difflistdict['oe'].keys():
-                if i in difflistdict['oe'][j]['modset']:
-                    moddict['oe'][i].add(j)
-            moddict['eo'][i]=set()
-            for j in difflistdict['eo'].keys():
-                if i in difflistdict['eo'][j]['modset']:
-                    moddict['eo'][i].add(j)
-    return moddict
-
-
-
-if __name__ == "__main__":
-    print(generateModDictExport2(2))
+    moddict['numprimes']=topprime
     parentdir='.'
     combinedlistfolder='combinedlistfolder'
-    primelistfile='primedict.txt'
-    primelistfilepath=os.path.join(parentdir,primelistfile)
-    combinedlistpath=os.path.join(parentdir,combinedlistfolder)
+    difflistfilebase='_difflist.txt'
     #print(combinedifflists((6,modfactordiff(6,5)),(17,modfactordiff(17,5))))
-    if not os.path.exists(primelistfilepath):
-        primegenerator=primegen()
-        prime=next(primegenerator)
-        #prime*=next(primegenerator)
-        primelistdict=dict()
-        primelistdict[prime]=dict()
-        primelistdict[prime]['primelist']=[prime]
-        primelistdict[prime]['modlist']=dict()
-    """
-    '''
-    difflistdict=dict()
-    for i in squaremodlist:
-        difflist.append(i)
-    skipfirst=True
-    for i in reversed(squaremodlist):
-        if skipfirst:
-            skipfirst=False
-            continue
-        difflist.append(i)
-            
-    squaremoddict=dict()
-    for i in difflist:
-        squaremoddict[i]
-    for i in difflist:
-        squaremoddict[i]=set()
-        for j in range(1,primeproduct):
-            squaremoddict[i].add(((j**2)%primeproduct-(i**2)%primeproduct+15)%15)
-    moddict=dict()
-    for i in range(0,15):
-        moddict[i]=set()
-        for key in squaremoddict.keys():
-            if i in squaremoddict[key]:
-                moddict[i].add(key)
-    print(squaremoddict)
-    print(moddict)
-    '''
+
+    for i in range(1,primeproduct):
+        if GCD(i,primeproduct)[0]==1:
+            moddict['diffset']=set()
+            for j in difflistdict['oe'].keys():
+                if i in difflistdict['oe'][j]['modset']:
+                    moddict['diffset'].add(j)
+            moddict['difflist']=sorted(moddict['diffset'])
+            moddict.pop('diffset')
+            difflistfile=str(topprime)+'_oe_'+str(i)+difflistfilebase
+            combinedlistpath=os.path.join(parentdir,combinedlistfolder,difflistfile)
+            with open(combinedlistpath,'w') as savecombinedlist:
+                json.dump(moddict,savecombinedlist)
+            savecombinedlist=None
+            moddict['diffset']=set()
+            for j in difflistdict['eo'].keys():
+                if i in difflistdict['eo'][j]['modset']:
+                    moddict['diffset'].add(j)
+            moddict['difflist']=sorted(moddict['diffset'])
+            moddict.pop('diffset')
+            difflistfile=str(topprime)+'_eo_'+str(i)+difflistfilebase
+            combinedlistpath=os.path.join(parentdir,combinedlistfolder,difflistfile)
+            with open(combinedlistpath,'w') as savecombinedlist:
+                json.dump(moddict,savecombinedlist)
+            savecombinedlist=None
+
+import json
+import os
+
+if __name__ == "__main__":
+    #print(generateModDictExport2(2))
+    #generateModDictExport2(2)
+    #generateModDictExport2(3)
+    #generateModDictExport2(4)
+    #generateModDictExport2(5)
+    generateModDictExport2(6)
+    #generateModDictExport2(7)
+    
