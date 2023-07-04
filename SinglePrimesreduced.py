@@ -312,18 +312,20 @@ def factormoddiff(p,m):
     return toreturn
 
 """
-def factormoddiff(divisor,modulus):
+def factormoddiff(divisor,product):
     #initialise dictionary to return
+    #print('factormoddiff',divisor,product)
     toreturn=set()
-    print('factormoddiff',divisor,modulus)
-    
+    modulus=product%divisor
+    #print('factormoddiff',divisor,product,modulus)
     #The multiple of the divisor
     multiple=0
-    candidate=divisor*multiple+modulus
+    factorset=set()
     #print('divisor ',i,' modulus ',j)
-    while (candidate<divisor**2):
+    while (divisor*multiple+modulus<divisor**2):
         #candidate modulus product
-        #candidate=divisor*multiple+modulus
+        #print('while divisor*multiple+modulus<divisor**2',divisor,multiple,modulus)
+        candidate=divisor*multiple+modulus
         #get prime factorisation of candidate
         primelist=list(primefac.primefac(candidate))
         primelist.append(1)
@@ -339,7 +341,7 @@ def factormoddiff(divisor,modulus):
         lenlist=len(primelist)
         #use binary split of the list of primes
         #For each binary split of the prime list get the product of the partition
-        partitionvalue=2**lenlist
+        partitionvalue=2**len(primelist)
         for partitionscheme in range(1,partitionvalue):
             partitionproduct=1
             scheme=binarysplit(partitionscheme)
@@ -350,11 +352,112 @@ def factormoddiff(divisor,modulus):
             
             if(partitionproduct<=divisor and candidate/partitionproduct<=divisor and CandidatePasses):
                 #moddict[(i,j)].add((partitionproduct*candidate//partitionproduct,partitionproduct,candidate//partitionproduct))
-                toreturn.add((divisor-partitionproduct+candidate//partitionproduct)%divisor)
-                toreturn.add((divisor-candidate//partitionproduct+partitionproduct)%divisor)
-        
+                factors=set()
+                if partitionproduct>=candidate//partitionproduct:
+                    factorset.add((int(partitionproduct),int(candidate//partitionproduct)))
+                else:
+                    factorset.add((int(candidate//partitionproduct),int(partitionproduct)))
         multiple+=1
-        candidate=divisor*multiple+modulus
+    #print('factors',factorset)
+    
+    
+    primegenerator = primegen()
+    testprime=next(primegenerator)#2
+    while len(factorset)>2 and testprime<1000:
+        #print(divisor,len(factors),testprime)
+        testfactorset=set()
+
+        testprime=next(primegenerator)#3
+        if testprime==divisor:
+            continue
+        else:
+            testproduct=product*testprime
+            testmodulus=testproduct%divisor
+            testknownfactor=testprime%divisor
+            testmultiple=0
+            testcandidate=divisor*testmultiple+testmodulus
+            while testcandidate<divisor**3:
+                #print(testcandidate)
+                testCandidatePasses=True
+                #print('testprime',testprime,'testmodulus',testmodulus,'testcandidate',testcandidate,'divisor',divisor,'gccd',GCD(testcandidate,divisor)[0])
+                if GCD(testcandidate,divisor)[0]!=1:
+                    testCandidatePasses=False
+                if not testCandidatePasses:
+                    #print(testcandidate)
+                    testmultiple+=1
+                    testcandidate=divisor*testmultiple+testmodulus
+                    continue
+                #print('after gcd')
+                #print('testprime',testprime,'testcandidate',testcandidate,'testknownfactor',testknownfactor,'gcg',GCD(testcandidate,testknownfactor)[0])
+                if GCD(testcandidate,testknownfactor)[0]!=testknownfactor:
+                    testCandidatePasses=False
+                #print('testcandidatepasses',testCandidatePasses)
+                if not testCandidatePasses:
+                    #print(testcandidate)
+                    testmultiple+=1
+                    testcandidate=divisor*testmultiple+testmodulus
+                    #print('continue testcandidate',testcandidate,testmultiple)
+                    continue
+                #print('after known factor')
+                testcandidate=int(testcandidate//testknownfactor)
+                testprimelist=list(primefac.primefac(int(testcandidate)))
+                testprimelist.append(1)
+                testprimelist.append(1)
+                #print('testprimelist',testprimelist,'testprime',testprime,'testcandidate',testcandidate,'testknownfactor',testknownfactor,'divisor',divisor)
+                if testCandidatePasses:
+                    for eachprime in testprimelist:
+                        if eachprime>=divisor:
+                            CandidatePasses=False
+                if not testCandidatePasses:
+                    #print(testcandidate)
+                    testmultiple+=1
+                    testcandidate=divisor*testmultiple+testmodulus
+                    #print('each prime fails')
+                    continue
+                #print('after each prime in primelist',testprimelist)
+                #get the number of primes in the candidate prime factorisation
+                testlenlist=len(testprimelist)
+                #print(testprimelist)
+                #use binary split of the list of primes
+                #For each binary split of the prime list get the product of the partition
+                testpartitionvalue=2**testlenlist
+                
+                for testpartitionscheme in range(1,testpartitionvalue):
+                    testpartitionproduct=1
+                    testscheme=binarysplit(testpartitionscheme)
+                    #print(partitionscheme,scheme)
+                    for testpos in range(0,len(testscheme)):
+                        if(testscheme[testpos]):
+                            testpartitionproduct*=testprimelist[testpos]
+                    testfactors=set()
+                    if(testpartitionproduct<=divisor and int(testcandidate//testpartitionproduct)<=divisor and testCandidatePasses):
+                        #moddict[(i,j)].add((partitionproduct*candidate//partitionproduct,partitionproduct,candidate//partitionproduct))
+                        #print()
+                        testfactors.add(int(testpartitionproduct))
+                        testfactors.add(int(testcandidate//testpartitionproduct))
+                    if len(testfactors)==1:
+                        testfactorlist=list(testfactors)
+                        testfactorset.add((testfactorlist[0],testfactorlist[0]))
+                    if len(testfactors)==2:
+                        testfactorlist=list(testfactors)
+                        if testfactorlist[0]>=testfactorlist[1]:
+                            testfactorset.add((testfactorlist[0],testfactorlist[1]))
+                        else:
+                            testfactorset.add((testfactorlist[1],testfactorlist[0]))
+                testmultiple+=1
+                testcandidate=divisor*testmultiple+testmodulus
+                #print('testfactorset',testfactorset)
+        #print('testprime',testprime,'factorset',factorset,'testfactorset',testfactorset,'divisor',divisor,'product',product)
+        factorset=factorset.intersection(testfactorset)
+        #print('testprime',testprime,'factorset',factorset,'testfactorset',testfactorset,'divisor',divisor,'product',product)
+        #print('factorsetss',factorset)
+        #print('factorss',factors)
+        testprime=next(primegenerator)    
+    for factorpair in factorset:
+        factorlist=list(factorpair)            
+        toreturn.add((divisor-factorlist[0]+factorlist[1])%divisor)
+        toreturn.add((divisor-factorlist[1]+factorlist[0])%divisor)
+        
     #print (toreturn)
     return toreturn
 
@@ -413,8 +516,8 @@ if __name__ == "__main__":
     q=213456789127
     p=1234516789133
     q=2134516789127
-    p=21345703
-    q=12345701
+    p=140929
+    q=270913
 
     product=p*q
     root4d=isqrt((4*product)//3)
@@ -428,8 +531,8 @@ if __name__ == "__main__":
     diffdict=dict()
     moddict=dict()
     pqmoddiffdict=dict()
-    while primeproduct<root4d and prime<12:
-        difflist=list(sorted(factormoddiff(prime,product%prime)))
+    while primeproduct<root4d and prime<18:
+        difflist=list(sorted(factormoddiff(prime,product)))
         if len(difflist)<(prime+1)//2 or True :
             diffdict[prime]=difflist
             primeproduct*=prime
@@ -467,6 +570,7 @@ if __name__ == "__main__":
     #print('mul',mul,combineddifflist[0],mul*combineddifflist[0],product,q-p)
     #print('eveneolist',eveneolist)
     #print('evenoelist',evenoelist)
+    #print(combineddifflist)
     while not found and mul*combineddifflist[0]<product:
         #print(mul)
         #print(product%4,mul%2,q-p)
@@ -517,151 +621,3 @@ if __name__ == "__main__":
         #print('mul',mul,combineddifflist[0],mul*combineddifflist[0],product,q-p)
                 
             
-
-"""    
-    print(combineddifflist)
-"""
-
-
-
-"""
-    multiplier=0
-    while(klist[1][listofkprimes][multiplier]*start<rootdthird):
-        multiplier+=1
-    multiplier-=1
-    start*=listofkprimes[multiplier]
-    print('second start',start,rootdthird-start,first,(rootdthird-start)/first)
-
-    listoflprimes=list()
-    listoflprimes.append(first)
-    #print (d,(d**.5)//1,(d**.5/3**.5)//1,primeproduct,first,primeproduct//first)
-    start=primeproduct//first
-    #print('try1',first)
-    if (d%(start+first)==0):
-        print('factors found1:',start+first,d/(start+first))
-    nextp=next(primegenerator)
-    #print('try2',nextp)
-    listoflprimes.append(nextp)
-"""
-"""
-if __name__ == "__main__":
-    product=533149*1005019
-    print(product,product**.5,product**.5/3**.5)
-    print(product%6,4049%6,6091%6,product%10,4049%10,6091%10,4049%60,6091%60)
-    klist=primedisjointproduct(product)
-    #print(factors(product%klist[0]['primeproduct'],klist[0]['primeproduct'],klist[0]['listofkprimes']))
-    #print(factors(product%klist[1]['primeproduct'],klist[1]['primeproduct'],klist[1]['listofkprimes']))
-    klist[0]['factors']=factors(product%klist[0]['primeproduct'],klist[0]['primeproduct'],klist[0]['listofkprimes'])
-    klist[1]['factors']=factors(product%klist[1]['primeproduct'],klist[1]['primeproduct'],klist[1]['listofkprimes'])
-    #print(klist[0]['listofkprimes'])
-    #print(klist[1]['listofkprimes'])
-    #print(klist[0]['factors'])
-    #print(klist[1]['factors'])
-    #print(klist[0]['primeproduct'])
-    #print(klist[1]['primeproduct'])
-    #print(klist)
-    factorfunctions1=dict()
-    factorfunctions2=list()
-    for factor1 in klist[0]['factors'][(klist[0]['primeproduct'],product%klist[0]['primeproduct'])]:
-        #print(factor1)
-        for factor2 in klist[1]['factors'][(klist[1]['primeproduct'],product%klist[1]['primeproduct'])]:
-            #print(factor2)
-            #print(factor1,factor2)
-            #print(klist[0]['primeproduct'],factor1,klist[1]['primeproduct'],factor2)
-            factorfunctions1[(factor1,factor2)]=(diophantine(klist[0]['primeproduct'],factor1,klist[1]['primeproduct'],factor2))    
-            #print(factorfunctions1[(factor1,factor2)])
-    count=0
-    addlist=list()
-    for factorfunction in factorfunctions1.keys():
-        if factorfunctions1[factorfunction][0]==0:
-            #print(klist[0]['primeproduct'],klist[1]['primeproduct'])
-            #print(factorfunction)
-            #print(factorfunctions1[factorfunction])
-            #print(klist[0]['primeproduct'],'* x +',factorfunction[0],'=',klist[1]['primeproduct'],'* y +',factorfunction[1])
-            #print(klist[0]['primeproduct'],'* (',klist[1]['primeproduct'],'* x +',factorfunctions1[factorfunction][1],') +',factorfunction[0],'=',
-            #      klist[1]['primeproduct'],'* (',klist[0]['primeproduct'],'* y +',factorfunctions1[factorfunction][2],') +',factorfunction[1])
-            addlist.append(klist[0]['primeproduct']*factorfunctions1[factorfunction][1]+factorfunction[0])
-            #factorfunctions2.append((divisor1,divisor2,factorfunction[1],product%divisor1))
-            #factorfunctions2.append((divisor2,divisor1,factorfunction[2],product%divisor2))
-            count +=1
-    #print(count)
-    #print(product,product**.5,product**.5/3**.5,(product**.5-product**.5/3**.5)/(klist[0]['primeproduct']*klist[1]['primeproduct'])*count)
-    print(sorted(addlist))
-    print(len(addlist))
-    
-
-"""
-
-
-"""
-
-if __name__ == "__main__":
-    product=144871
-    divisor1=30
-    divisor2=42
-    factordict=factors(product%divisor1,divisor1,[2,3,5])
-    trialdict=dict()
-    for key in factordict.keys():
-        trialdict[key]=factordict[key]
-    factordict=factors(product%divisor2,divisor2,[2,3,5,7])
-    for key in factordict.keys():
-        trialdict[key]=factordict[key]
-    for key in trialdict.keys():
-        pass
-        #print (key,'->',trialdict[key])
-    factors1=list()
-    for factor in trialdict[divisor1,product%divisor1]:
-        factors1.append(factor)
-        #print(factor)
-    factors2=list()
-    for factor in trialdict[divisor2,product%divisor2]:
-        factors2.append(factor)
-        #print(factor)
-    #print(factors1)
-    #print(factors2)
-    factorfunctions1=dict()
-    factorfunctions2=dict()
-    for factor1 in factors1:
-        for factor2 in factors2:
-            factorfunctions1[(factor1,factor2)]=(diophantine(divisor1,factor1,divisor2,factor2))    
-    for factorfunction in factorfunctions1.keys():
-        if(factorfunctions1[factorfunction][0]==0):
-            print(factorfunction)
-            print(factorfunctions1[factorfunction])
-        for function in factorfunction.keys():
-            if function[0]==0:
-                print(factorfunction.key(),function)
-            #print(factorfunctions1[factorfunctions])
-            #factorfunctions2.append((divisor1,divisor2,factorfunction[1],product%divisor1))
-            #factorfunctions2.append((divisor2,divisor1,factorfunction[2],product%divisor2))
-    for factorfunction in factorfunctions1:
-        pass
-        #print(factorfunction)
-        #print(factorfunction[0],'* (',factorfunction[1],'+',factorfunction[2],') +',factorfunction[3])
-        #print(factorfunction[0]* factorfunction[1],'* x +',factorfunction[0]*factorfunction[2]+factorfunction[3])
-
-"""
-"""
-    trialdict=list()     
-    #print((30,144871%30),sorted(testdict[(30,144871%30)]))                
-    #print((42,144871%42),sorted(testdict[(42,144871%42)]))                
-    for i in  sorted(testdict[(30,144871%30)],reverse=True):
-        for j in sorted(testdict[(42,144871%30)],reverse=True):
-            (w,x,y)=diophantine(30,i,42,j)
-            if(w==0):
-                #print(30,'*(',42,'* x +',x,")+",i,"=",42,"* (",30,"* y +",y,")+",j)
-                trialdict.append((144871,30,42,30*42,i,30,x))
-                trialdict.append((144871,30,42,30*42,j,42,y))
-    def first(elem):
-        return elem[5]*elem[6]
-    trialsorted=sorted(trialdict, reverse=True, key=first)
-    for ts in trialsorted:
-        #ts[0]=d
-        #ts[1]=firstdiv
-        #ts[2]=seconddiv
-        #ts[3]=product of firstdiv and seconddiv
-        #ts[4]=mod of this div
-        #ts[5]=this div
-        #ts[6]=x or y
-        print(ts[0]%ts[1],ts[0]%ts[2],ts[4],ts[6])        
-"""
