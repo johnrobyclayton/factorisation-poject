@@ -413,31 +413,48 @@ if __name__ == "__main__":
     q=213456789127
     p=1234516789133
     q=2134516789127
-    p=21345703
-    q=12345701
-
+    p=2134567907
+    q=1234567891
+    p=37975227936943673922808872755445627854565536638199
+    q=40094690950920881030683735292761468389214899724061
+    
+    modpower=5
     product=p*q
     root4d=isqrt((4*product)//3)
     primegenerator = primegen()
     primeproduct=1
     lenlist=1
     prime=next(primegenerator)#2
-    prime=next(primegenerator)*2#3
+    prime=next(primegenerator)*2*3**(modpower+2)#3
+    print('primeproduct',primeproduct,'prime',prime)
     primeproduct*=prime
+    print('primeproduct',primeproduct)
     #prime=4
     diffdict=dict()
     moddict=dict()
     pqmoddiffdict=dict()
-    while primeproduct<root4d and prime<12:
-        difflist=list(sorted(factormoddiff(prime,product%prime)))
-        if len(difflist)<(prime+1)//2 or True :
-            diffdict[prime]=difflist
-            primeproduct*=prime
-        moddict[prime]=[product%prime,p%prime,q%prime]
+    while primeproduct<root4d and (prime<8 or prime ==2*3**(modpower+3)) :
+        if prime==2*3**(modpower+3):
+            difflist=list(sorted(factormoddiff(prime,product%prime)))
+        else:   
+            difflist=list(sorted(factormoddiff(prime**modpower,product%(prime**modpower))))
+        if len(difflist)<(prime**modpower+1)/2.4 :
+            if prime==2*3**(modpower+3):
+                diffdict[prime]=difflist
+                primeproduct*=prime
+            else:
+                diffdict[prime**modpower]=difflist
+                primeproduct*=prime**modpower
+        if prime==2*3**(modpower+3):
+            moddict[prime]=[product%(prime),p%(prime),q%(prime)]
+        else:
+            moddict[prime**modpower]=[product%(prime**modpower),p%(prime**modpower),q%(prime**modpower)]
         
         prime=next(primegenerator)
-    print('moddict',moddict)    
+    print('moddict',moddict)
     print('diffdict',diffdict) 
+    for item in diffdict.items():
+        print (primeproduct,len(item)/primeproduct)    
     primedifflist=list()
     
     for key in sorted(diffdict.keys(),reverse=True):
