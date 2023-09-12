@@ -62,27 +62,29 @@ def sortfunc(e):
 
 def split_coordinates(coords):
     split_coords=dict()
+    returndict=dict()
     #diffset=set()
-    print(coords)
+    #print(coords)
     for coord in coords.keys():
         coords[coord]['coord']=coord
+        
         #diffset.add(coord['diff'])
-        print(coord,coords[coord])
-        print(coords[coord]['diff'])
-        print(split_coords.keys())
+        #print(coord,coords[coord])
+        #print(coords[coord]['diff'])
+        #print(split_coords.keys())
         if coords[coord]['diff'] in split_coords:
             split_coords[coords[coord]['diff']].append(coords[coord])
         else:
             split_coords[coords[coord]['diff']]=list()
             split_coords[coords[coord]['diff']].append(coords[coord])
-    print(split_coords)
-    for coordlist in split_coords.keys():
-        print(split_coords[coordlist])
-        print(split_coords[coordlist],coordlist)
-        for e in split_coords[coordlist]:
-            print(sortfunc(e))
-        sortedcoordlist=split_coords[coordlist].sort(reverse=False,key=sortfunc)
-    print(sortedcoordlist)
+        if coords[coord]['diff'] in returndict:
+            returndict[coords[coord]['diff']].add(coord)
+        else:
+            returndict[coords[coord]['diff']]=set()
+            returndict[coords[coord]['diff']].add(coord)
+
+    return returndict
+    
 
     
 
@@ -120,20 +122,10 @@ def moddiff(x,y):
 p=467
 q=991
 d=p*q
-print(generate_grid((5,[1,4]),(7,[1,3,4,6])))
-print(generate_diagonalSequence(5,11))
-print(generate_diagonalSequence(5,13))
-print(generate_diagonalSequence(5,17))
-print(generate_diagonalSequence(5,19))
-print(generate_diagonalSequence(7,11))
-print(generate_diagonalSequence(7,13))
-print(generate_diagonalSequence(7,17))
-print(generate_diagonalSequence(7,19))
-print(generate_diagonalSequence(13,11))
-print(generate_diagonalSequence(11,13))
-print(generate_diagonalSequence(19,17))
-print(generate_diagonalSequence(17,19))
-
+print('generate_grid',generate_grid((5,[1,4]),(7,[1,3,4,6])))
+print('generate_coordinates',generate_coordinates((5,[1,4]),(7,[1,3,4,6])))
+print('generate_diagonalsequence',generate_diagonalSequence(5,7))
+print('split_coordinates',split_coordinates(generate_coordinates((5,[1,4]),(7,[1,3,4,6]))))
 '''
 print(
     #generate_grid(
