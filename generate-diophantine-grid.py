@@ -209,54 +209,54 @@ d=p*q
 #print('split_coordinates',split_coordinates(generate_coordinates((5,[1,4]),(7,[1,3,4,6]))))
 #print('generate_grid2',generate_grid2((5,[1,4]),(7,[1,3,4,6])))
 #print('generate_grid2',generate_grid2((7,[1,3,4,6]),(5,[1,4])))
-grid1=generate_grid(
-        generate_grid(
-            generate_grid(
-                moddiff(2,d%2)
-                ,moddiff(3,d%3)
-            ),
-            generate_grid(
-                moddiff(5,d%5)
-                ,moddiff(7,d%7)
-            )
-        ),
-        generate_grid(
-            generate_grid(
-                moddiff(11,d%11)
-                ,moddiff(13,d%13)
-            ),
-            generate_grid(
-                moddiff(17,d%17)
-                ,moddiff(19,d%19)
-            )
-        )
-    )
 
-print(grid1[0],grid1[1][1:10],grid1[1][-1:-10])
 grid2=generate_grid2(
         generate_grid2(
-            generate_grid(
-                moddiff(2,d%2)
-                ,moddiff(3,d%3)
+            generate_grid2(
+                generate_grid(
+                    moddiff(2,d%2)
+                    ,moddiff(3,d%3)
+                ),
+                generate_grid(
+                    moddiff(5,d%5)
+                    ,moddiff(7,d%7)
+                )
             ),
-            generate_grid(
-                moddiff(5,d%5)
-                ,moddiff(7,d%7)
+            generate_grid2(
+                generate_grid(
+                    moddiff(11,d%11)
+                    ,moddiff(13,d%13)
+                ),
+                generate_grid(
+                    moddiff(17,d%17)
+                    ,moddiff(19,d%19)
+                )
             )
         ),
         generate_grid2(
-            generate_grid(
-                moddiff(11,d%11)
-                ,moddiff(13,d%13)
+            generate_grid2(
+                generate_grid(
+                    moddiff(23,d%23)
+                    ,moddiff(29,d%29)
+                ),
+                generate_grid(
+                    moddiff(31,d%31)
+                    ,moddiff(37,d%37)
+                )
             ),
-            generate_grid(
-                moddiff(17,d%17)
-                ,moddiff(19,d%19)
+            generate_grid2(
+                generate_grid(
+                    moddiff(41,d%41)
+                    ,moddiff(43,d%43)
+                ),
+                generate_grid(
+                    moddiff(47,d%47)
+                    ,moddiff(53,d%53)
+                )
             )
         )
     )
-
-print(grid2[0],grid2[1][1:10],grid1[1][-1:-10])
+print(grid2[0],grid2[1][1:10],grid2[1][-1:-10:-1])
 
 '''
 print(
