@@ -7,17 +7,28 @@ def generate_grid(x, y):
 
 
 def generate_diagonalSequence(p,q):
-    if q<p:
-        temp=p
-        p=q
-        q=temp
+    #p is the smaller value
+    #q is the larger value
+    #p and q are coprime
+    #In a grid q wide and p high
+    #nimber the cells starting from (p,q) (0,0) equals 0
+    #Increase p and q by 1 each for the next cell which equals 1
+    #continue increasing the cell value by 1 each time
+    #continue until p is at p-1 and then p goes back to 0 
+    #and then continue with p increasing with q 
+    #and incrementing the value of the cell by 1 at each step
+    #due to p and q being coprime this will continue until 
+    #the entire grid is filled with numbers in sequence from0 to p*q-1
+    #this function generates the values of the cell and q-p returned as a tuple
+    #for each of the cells where p or q is 0.
+    
     if p==q:
         return [(0,0)]
     start=0
     diag=0
     diagp=diag
     diagq=diag
-    next=p
+    next=0
     nextd=p
     if next>0:
         diagp+=p
@@ -25,10 +36,19 @@ def generate_diagonalSequence(p,q):
     elif next<0:
         diagq+=q
         diag=diagq
+    elif next==0:
+        diag=0
     returnlist=list()
     returnlist.append((start,diag))
+    next=p
     while next!=0:
         start=next
+        if next>0:
+            diagp+=p
+            diag=diagp
+        elif next<0:
+            diagq+=q
+            diag=diagq
         returnlist.append((start,diag))
         if(p+start>q):
             next=start-q
@@ -36,13 +56,64 @@ def generate_diagonalSequence(p,q):
             next=start+p
         elif p+start==q:
             next=0
+    return returnlist
+
+def generate_diagonalSequence2(p,q):
+    #p is the smaller value
+    #q is the larger value
+    #p and q are coprime
+    #In a grid q wide and p high
+    #nimber the cells starting from (p,q) (0,0) equals 0
+    #Increase p and q by 1 each for the next cell which equals 1
+    #continue increasing the cell value by 1 each time
+    #continue until p is at p-1 and then p goes back to 0 
+    #and then continue with p increasing with q 
+    #and incrementing the value of the cell by 1 at each step
+    #due to p and q being coprime this will continue until 
+    #the entire grid is filled with numbers in sequence from0 to p*q-1
+    #this function generates the values of the cell and q-p returned as a tuple
+    #for each of the cells where p or q is 0.
+    
+    if p==q:
+        return [(0,0)]
+    start=0
+    diag=0
+    diagp=diag
+    diagq=diag
+    next=0
+    if next>0:
+        diagp+=p
+        diag=diagp
+    elif next<0:
+        diagq+=q
+        diag=diagq
+    elif next==0:
+        diag=0
+    returnlist=list()
+    returnlist.append((start,diag))
+    #print('p',p,'q',q)
+    if p<q:
+        next=p
+    else:
+        next=-q
+    #print('p',p,'q',q,'next',next)
+    while next!=0:
+        start=next
         if next>0:
             diagp+=p
             diag=diagp
         elif next<0:
             diagq+=q
             diag=diagq
+        returnlist.append((start,diag))
+        if(p+start>q):
+            next=start-q
+        elif p+start<q:
+            next=start+p
+        elif p+start==q:
+            next=0
     return returnlist
+    
     
 def generate_coordinates(p,q):
     #p is the smaller value and the list of diffs of the smaller value
@@ -88,17 +159,6 @@ def split_coordinates(coords):
 
     
 
-def generate_grid2(x, y):
-    grid=dict()
-    grid[x[0]*y[0]]=set()
-    a=x[0]
-    c=y[0]
-    for b in x[1]:
-        for d in y[1]:
-            print('a',a,'b',b,'c',c,'d',d,'res',(((c*d)-b)/abs(a-c)))
-            grid[a*c].add(a*(((c*d)-b)/abs(a-c))+b)
-    return grid
-
 
 def moddiff(x,y):
     diffset=set()
@@ -119,17 +179,37 @@ def moddiff(x,y):
 
 
     return((x,tuple(diffset)))
+
+def generate_grid2(x, y):
+    diagseq=generate_diagonalSequence2(x[0],y[0])
+    diagseqdict=dict()
+    for pair in diagseq:
+        diagseqdict[pair[0]]=pair[1]
+    splitcoords=split_coordinates(generate_coordinates(x,y))
+    #print('diagseq',diagseq)
+    #print('diagseqdict',diagseqdict)
+    #print('splitcoords',splitcoords)
+    grid=dict()
+    gridsize=x[0]*y[0]
+    grid[gridsize]=set()
+    for diff in splitcoords.keys():
+        #print('coords',splitcoords[diff])
+        for coord in splitcoords[diff]:
+            #print(coord,diff,diagseqdict[diff])
+            grid[gridsize].add(diagseqdict[diff]+min(coord[0],coord[1]))
+    return (gridsize,tuple(sorted(grid[gridsize])))
+
+
 p=467
 q=991
 d=p*q
-print('generate_grid',generate_grid((5,[1,4]),(7,[1,3,4,6])))
-print('generate_coordinates',generate_coordinates((5,[1,4]),(7,[1,3,4,6])))
-print('generate_diagonalsequence',generate_diagonalSequence(5,7))
-print('split_coordinates',split_coordinates(generate_coordinates((5,[1,4]),(7,[1,3,4,6]))))
-'''
-print(
-    #generate_grid(
-    generate_grid2(
+#print('generate_grid',generate_grid((5,[1,4]),(7,[1,3,4,6])))
+#print('generate_coordinates',generate_coordinates((5,[1,4]),(7,[1,3,4,6])))
+#print('generate_diagonalsequence',generate_diagonalSequence(5,7))
+#print('split_coordinates',split_coordinates(generate_coordinates((5,[1,4]),(7,[1,3,4,6]))))
+#print('generate_grid2',generate_grid2((5,[1,4]),(7,[1,3,4,6])))
+#print('generate_grid2',generate_grid2((7,[1,3,4,6]),(5,[1,4])))
+grid1=generate_grid(
         generate_grid(
             generate_grid(
                 moddiff(2,d%2)
@@ -151,11 +231,10 @@ print(
             )
         )
     )
-)
-print(
-    #generate_grid(
-    generate_grid(
-        generate_grid(
+
+print(grid1[0],grid1[1][1:10],grid1[1][-1:-10])
+grid2=generate_grid2(
+        generate_grid2(
             generate_grid(
                 moddiff(2,d%2)
                 ,moddiff(3,d%3)
@@ -165,7 +244,7 @@ print(
                 ,moddiff(7,d%7)
             )
         ),
-        generate_grid(
+        generate_grid2(
             generate_grid(
                 moddiff(11,d%11)
                 ,moddiff(13,d%13)
@@ -176,8 +255,9 @@ print(
             )
         )
     )
-)
-'''
+
+print(grid2[0],grid2[1][1:10],grid1[1][-1:-10])
+
 '''
 print(
     #generate_grid(
