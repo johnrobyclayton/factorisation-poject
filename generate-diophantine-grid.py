@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 def generate_grid(x, y):
     grid=dict()
     for n in range(0,int(x[0]*y[0])):
@@ -160,25 +161,29 @@ def split_coordinates(coords):
     
 
 
+
+
 def moddiff(x,y):
     diffset=set()
     pp=set(range(1,x))
+    #print(pp)
     while len(pp):
-        p =pp.pop()
-        qq=set(range(p,x))
-        qfound=False
-        while qfound==False and len(qq):
-            q=qq.pop()
-            if (p*q)%x==y:
-                diffset.add(q-p)
-                diffset.add(x-(q-p))
-                pp.discard(p)
-                pp.discard(q)
-                qq.discard(q)
-                qfound=True
+        found=False
+        for i in pp:
+            for j in pp:
+                if (i*j)%x==y:
+                    diffset.add((x+i-j)%x)
+                    diffset.add((x-i+j)%x)
+                    pp.discard(i)
+                    pp.discard(j)
+                    found=True
+                if found:
+                    break
+            if found:
+                break
+    return((x,tuple(diffset)))        
 
 
-    return((x,tuple(diffset)))
 
 def generate_grid2(x, y):
     diagseq=generate_diagonalSequence2(x[0],y[0])
@@ -186,16 +191,11 @@ def generate_grid2(x, y):
     for pair in diagseq:
         diagseqdict[pair[0]]=pair[1]
     splitcoords=split_coordinates(generate_coordinates(x,y))
-    #print('diagseq',diagseq)
-    #print('diagseqdict',diagseqdict)
-    #print('splitcoords',splitcoords)
     grid=dict()
     gridsize=x[0]*y[0]
     grid[gridsize]=set()
     for diff in splitcoords.keys():
-        #print('coords',splitcoords[diff])
         for coord in splitcoords[diff]:
-            #print(coord,diff,diagseqdict[diff])
             grid[gridsize].add(diagseqdict[diff]+min(coord[0],coord[1]))
     return (gridsize,tuple(sorted(grid[gridsize])))
 
@@ -209,79 +209,26 @@ d=p*q
 #print('split_coordinates',split_coordinates(generate_coordinates((5,[1,4]),(7,[1,3,4,6]))))
 #print('generate_grid2',generate_grid2((5,[1,4]),(7,[1,3,4,6])))
 #print('generate_grid2',generate_grid2((7,[1,3,4,6]),(5,[1,4])))
-
-grid2=generate_grid2(
-        generate_grid2(
-            generate_grid2(
-                generate_grid(
-                    moddiff(2,d%2)
-                    ,moddiff(3,d%3)
-                ),
-                generate_grid(
-                    moddiff(5,d%5)
-                    ,moddiff(7,d%7)
-                )
-            ),
-            generate_grid2(
-                generate_grid(
-                    moddiff(11,d%11)
-                    ,moddiff(13,d%13)
-                ),
-                generate_grid(
-                    moddiff(17,d%17)
-                    ,moddiff(19,d%19)
-                )
-            )
-        ),
-        generate_grid2(
-            generate_grid2(
-                generate_grid(
-                    moddiff(23,d%23)
-                    ,moddiff(29,d%29)
-                ),
-                generate_grid(
-                    moddiff(31,d%31)
-                    ,moddiff(37,d%37)
-                )
-            ),
-            generate_grid2(
-                generate_grid(
-                    moddiff(41,d%41)
-                    ,moddiff(43,d%43)
-                ),
-                generate_grid(
-                    moddiff(47,d%47)
-                    ,moddiff(53,d%53)
-                )
-            )
-        )
-    )
-print(grid2[0],grid2[1][1:10],grid2[1][-1:-10:-1])
-
 '''
-print(
-    #generate_grid(
-    generate_grid(
-        generate_grid(
-            generate_grid(
-                moddiff(2,d%2)
-                ,moddiff(3,d%3)
-            ),
-            generate_grid(
-                moddiff(5,d%5)
-                ,moddiff(7,d%7)
-            )
-        ),
-        generate_grid(
-            generate_grid(
-                moddiff(11,d%11)
-                ,moddiff(13,d%13)
-            ),
-            generate_grid(
-                moddiff(17,d%17)
-                ,moddiff(19,d%19)
-            )
-        )
-    )
+currenttime=datetime.now()
+grid=generate_grid2(
+    moddiff(2,d%2),
+    moddiff(3,d%3)
 )
+endtime=datetime.now()
+print(grid[0],len(grid[1],),len(grid[1])/grid[0],endtime-currenttime)
 '''
+
+grid=generate_grid2(moddiff(2,d%2),moddiff(3,d%3))
+grid=generate_grid2(grid,moddiff(5,d%5))
+print(grid)
+print(moddiff(2,d%2))
+print(moddiff(3,d%3))
+print(moddiff(5,d%5))
+for i2 in moddiff(2,d%2)[1]:
+    for i3 in moddiff(3,d%3)[1]:
+        grid=generate_grid2((2,[i2]),(3,[i3]))
+        for i5 in moddiff(5,d%5)[1]:
+            grid2=generate_grid2(grid,(5,[i5]))
+            print('la',grid2,i2,i3,i5)
+    
