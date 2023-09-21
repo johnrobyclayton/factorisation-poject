@@ -159,35 +159,6 @@ def split_coordinates(coords):
     
 
     
-def moddiff2(x,y):
-    diffset=set()
-    mulls=set()
-    for i in range(1,x):
-        for j in range(i,x):
-            mulls.add((i,j))
-    while len(mulls):
-        nextmulls=set()
-        candidate=mulls.pop()
-        #print('candidate',candidate,'mulls',mulls)
-        if (candidate[0]*candidate[1])%x==y:
-            diffset.add((x+candidate[0]-candidate[1])%x)
-            diffset.add((x+candidate[1]-candidate[0])%x)
-            for pair in mulls:
-                #print('pair',pair,'candidate',candidate)
-                if not(pair[0]==candidate[0] or pair[0]==candidate[1] or pair[1]==candidate[0] or pair[1]==candidate[1]):
-                    nextmulls.add(pair)
-            mulls=nextmulls
-        for pair in mulls:
-            nextmulls.add(pair)
-        #print('mulls',mulls)
-        #print('nextmulls',nextmulls)
-        #print('diffset',diffset)
-        mulls=nextmulls
-    return((x,tuple(sorted(diffset))))        
-        
-            
-    
-    
 
 
 
@@ -214,38 +185,38 @@ def moddiff(x,y):
 
 
 def generate_grid2(grid1, grid2, maxval):
-    starttime=datetime.now()
+    #starttime=datetime.now()
     diagseq=generate_diagonalSequence2(grid1[0],grid2[0],maxval)
-    endtime=datetime.now()
-    print('generate_diagonalsequnce',endtime-starttime)
+    #endtime=datetime.now()
+    #print('generate_diagonalsequnce',endtime-starttime)
     diagseqdict=dict()
     #convert ordered pairs into dict
-    starttime=datetime.now()
+    #starttime=datetime.now()
     for pair in diagseq:
         diagseqdict[pair[0]]=pair[1]
-    endtime=datetime.now()
-    print('digseq conversion',endtime-starttime)
+    #endtime=datetime.now()
+    #print('digseq conversion',endtime-starttime)
     #split the coordinates of the cros prod of the two grids into groups with the same difference between the second value minus the first value 
-    starttime=datetime.now()
+    #starttime=datetime.now()
     splitcoords=split_coordinates(generate_coordinates(grid1,grid2))
-    endtime=datetime.now()
-    print('split coords',endtime-starttime)
+    #endtime=datetime.now()
+    #print('split coords',endtime-starttime)
     grid=dict()
     gridsize=grid1[0]*grid2[0]
     grid[gridsize]=set()
-    starttime=datetime.now()
+    #starttime=datetime.now()
     for diff in splitcoords.keys():
         for coord in splitcoords[diff]:
             if diff in diagseqdict:
                 if diagseqdict[diff]+min(coord[0],coord[1])<maxval:
                     grid[gridsize].add(diagseqdict[diff]+min(coord[0],coord[1]))
-    endtime=datetime.now()
-    print('forfor',endtime-starttime)
+    #endtime=datetime.now()
+    #print('forfor',endtime-starttime)
     return (gridsize,tuple(sorted(grid[gridsize])))
 
 
-p=137
-q=293
+p=244451
+q=634679
 d=p*q
 #d=299
 
@@ -266,47 +237,63 @@ print(grid[0],len(grid[1],),len(grid[1])/grid[0],endtime-currenttime)
 14924856
 '''
 
-grid=generate_grid2(moddiff(2,d%2),moddiff(3,d%3),d**.5)
-print(grid)
+grid_2_53=generate_grid2(moddiff(2,d%2),moddiff(53,d%53),d**.5*((3**.5)-(1/(3**.5))))
+print(grid_2_53)
+grid_3_47=generate_grid2(moddiff(3,d%3),moddiff(47,d%47),d**.5*((3**.5)-(1/(3**.5))))
+print(grid_3_47)
+grid_5_43=generate_grid2(moddiff(5,d%5),moddiff(43,d%43),d**.5*((3**.5)-(1/(3**.5))))
+print(grid_5_43)
+grid_7_41=generate_grid2(moddiff(7,d%7),moddiff(41,d%41),d**.5*((3**.5)-(1/(3**.5))))
+print(grid_7_41)
+grid_11_37=generate_grid2(moddiff(11,d%11),moddiff(37,d%37),d**.5*((3**.5)-(1/(3**.5))))
+print(grid_11_37)
+grid_13_31=generate_grid2(moddiff(13,d%13),moddiff(31,d%31),d**.5*((3**.5)-(1/(3**.5))))
+print(grid_13_31)
+grid_17_29=generate_grid2(moddiff(17,d%17),moddiff(29,d%29),d**.5*((3**.5)-(1/(3**.5))))
+print(grid_17_29)
+grid_19_23=generate_grid2(moddiff(19,d%19),moddiff(23,d%23),d**.5*((3**.5)-(1/(3**.5))))
+print(grid_19_23)
 
-print(moddiff(5,d%5))
-grid=generate_grid2(grid,moddiff(5,d%5),d**.5)
-print(grid)
-grid=(grid[0],tuple([i for i in grid[1] if i<d**.5]))
-print(grid)
-grid=generate_grid2(grid,moddiff(7,d%7),d**.5)
-print(grid)
-grid=(grid[0],tuple([i for i in grid[1] if i<d**.5]))
-print(grid)
-grid=generate_grid2(grid,moddiff(11,d%11),d**.5)
-print(grid)
-grid=(grid[0],tuple([i for i in grid[1] if i<d**.5]))
-print(grid)
-grid=generate_grid2(grid,moddiff(13,d%13),d**.5)
-print(grid)
-grid=(grid[0],tuple([i for i in grid[1] if i<d**.5]))
-print(grid)
-grid=generate_grid2(grid,moddiff(17,d%17),d**.5)
-print(grid)
-grid=(grid[0],tuple([i for i in grid[1] if i<d**.5]))
-print(grid)
-grid=generate_grid2(grid,moddiff(19,d%19),d**.5)
-print(grid)
-grid=(grid[0],tuple([i for i in grid[1] if i<d**.5]))
-print(grid)
+grid_2_53_19_23=generate_grid2(grid_2_53,grid_19_23,d**.5*((3**.5)-(1/(3**.5))))
+print(grid_2_53_19_23[0])
+grid_2_53=None
+grid_19_23=None
+
+grid_3_47_17_19=generate_grid2(grid_3_47,grid_17_29,d**.5*((3**.5)-(1/(3**.5))))
+print(grid_3_47_17_19[0])
+grid_3_47=None
+grid_17_29=None
+
+grid_5_43_13_31=generate_grid2(grid_5_43,grid_13_31,d**.5*((3**.5)-(1/(3**.5))))
+print(grid_5_43_13_31[0])
+grid_5_43=None
+grid_13_31=None
+
+grid_7_41_11_37=generate_grid2(grid_7_41,grid_11_37,d**.5*((3**.5)-(1/(3**.5))))
+print(grid_7_41_11_37[0])
+grid_7_41=None
+grid_11_37=None
+
 starttime=datetime.now()
-grid=generate_grid2(grid,moddiff(23,d%23),d**.5)
+grid1=generate_grid2(grid_2_53_19_23,grid_7_41_11_37,d**.5*((3**.5)-(1/(3**.5))))
+endtime=datetime.now()
+print('generate_grid2',endtime-starttime)
+print(grid1)
+grid_2_53_19_23=None
+grid_7_41_11_37=None
+
+starttime=datetime.now()
+grid2=generate_grid2(grid_3_47_17_19,grid_5_43_13_31,d**.5*((3**.5)-(1/(3**.5))))
+endtime=datetime.now()
+print('generate_grid2',endtime-starttime)
+print(grid2)
+grid_3_47_17_19=None
+grid_5_43_13_31=None
+
+starttime=datetime.now()
+grid=generate_grid2(grid1,grid2,d**.5*((3**.5)-(1/(3**.5))))
 endtime=datetime.now()
 print('generate_grid2',endtime-starttime)
 print(grid)
-grid=(grid[0],tuple([i for i in grid[1] if i<d**.5]))
-print(grid)
-starttime=datetime.now()
-print(moddiff(137,5))
-endtime=datetime.now()
-print('moddiff',endtime-starttime)
-starttime=datetime.now()
-print(moddiff2(137,5))
-endtime=datetime.now()
-print('moddiff2',endtime-starttime)
-    
+
+#67297116731534860170
