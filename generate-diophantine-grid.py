@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+
+
 def generate_grid(x, y):
     grid=dict()
     for n in range(0,int(x[0]*y[0])):
@@ -6,6 +8,23 @@ def generate_grid(x, y):
             grid[(n%x[0],n%y[0])]=n
     return((x[0]*y[0],sorted(set(grid.values()))))
 
+
+def primegen():
+    listofprimes=list()
+    if len(listofprimes)==0:
+        listofprimes.append(2)
+        yield listofprimes[-1]
+    def isprime(listofprimes,isit):
+        for x in listofprimes:
+            if isit%x==0:
+                return False
+        return True
+    while True:
+        nextstart=listofprimes[-1]+1
+        while not isprime(listofprimes,nextstart):
+            nextstart+=1
+        listofprimes.append(nextstart)
+        yield listofprimes[-1]
 
 def generate_diagonalSequence(p,q):
     #p is the smaller value
@@ -58,6 +77,68 @@ def generate_diagonalSequence(p,q):
         elif p+start==q:
             next=0
     return returnlist
+
+def GCD(a, b):
+    if a == 0: 
+        return b, 0, 1
+    gcd, s, t = GCD(b%a, a)
+    y1 = s 
+    x1 = t - (b//a) * s
+    return gcd, x1, y1
+
+#solve ax+b=cy+d given a,b,c,d
+
+#a*x+b=c*x+d
+#A=a
+#B=-c
+#C=d-b
+#A*x+B*x=C
+def diophantine(a,b,c,d):
+  #a*x+b=c*y+d
+  '''
+  a=3
+  b=1
+  c=5
+  d=2
+  '''
+  #print(a,"* x +",b,"=",c,"* y +",d)
+  A=a
+  B=-c
+  C=d-b
+
+
+  '''
+  #Solve: 3x + 6y = 9 
+  #x
+  a = 3
+  #b
+  b = -5
+  #c
+  c = 2
+  '''
+  #Step 1
+  #print(A,B) 
+  if A==0 and B==0:
+    if C == 0: 
+      return(-1,0,0)#print("Infinite Solutions are possible")
+    else:
+      return(-2,0,0)#print("Solution not possible")
+
+  #Step 2 
+  gcd, x1, y1 = GCD(A,B)
+
+  #Step 3 and 4 
+  if (C % gcd == 0):
+    x = x1 * (C//gcd)
+    y = y1 * (C//gcd)
+    #print("The values of x and y are: ", x, ",", y)
+    #print(a,'*(',c,'* x +',x,")+",b,"=",c,"* (",a,"* y +",y,")+",d)
+    return(0,(a+x)%a,(c+y)%c)
+  else:
+    return(-2,0,0)#print("Solution not possible") 
+    
+def diophantine2():
+    pass
 
 def generate_diagonalSequence2(p,q,maxval):
     #p is the smaller value
@@ -236,7 +317,7 @@ endtime=datetime.now()
 print(grid[0],len(grid[1],),len(grid[1])/grid[0],endtime-currenttime)
 14924856
 '''
-
+'''
 grid_2_53=generate_grid2(moddiff(2,d%2),moddiff(53,d%53),d**.5*((3**.5)-(1/(3**.5))))
 print(grid_2_53)
 grid_3_47=generate_grid2(moddiff(3,d%3),moddiff(47,d%47),d**.5*((3**.5)-(1/(3**.5))))
@@ -295,5 +376,9 @@ grid=generate_grid2(grid1,grid2,d**.5*((3**.5)-(1/(3**.5))))
 endtime=datetime.now()
 print('generate_grid2',endtime-starttime)
 print(grid)
+'''
+print(diophantine(30,17,41,11))  
+print(diophantine(30,1,41,0))  
+print(diophantine(30,0,41,1))  
 
 #67297116731534860170
