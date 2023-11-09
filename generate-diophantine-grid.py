@@ -131,9 +131,18 @@ def diophantine(a,b,c,d):
   if (C % gcd == 0):
     x = x1 * (C//gcd)
     y = y1 * (C//gcd)
+    while(x<0):
+        x+=c
+    while(x>c):
+        x-=c    
+    y = y1 * (C//gcd)
+    while(y<0):
+        y+=a
+    while(y>a):
+        y-=a
     #print("The values of x and y are: ", x, ",", y)
     #print(a,'*(',c,'* x +',x,")+",b,"=",c,"* (",a,"* y +",y,")+",d)
-    return(0,(a+x)%a,(c+y)%c)
+    return(0,x,y)
   else:
     return(-2,0,0)#print("Solution not possible") 
     
@@ -317,7 +326,7 @@ endtime=datetime.now()
 print(grid[0],len(grid[1],),len(grid[1])/grid[0],endtime-currenttime)
 14924856
 '''
-'''
+
 grid_2_53=generate_grid2(moddiff(2,d%2),moddiff(53,d%53),d**.5*((3**.5)-(1/(3**.5))))
 print(grid_2_53)
 grid_3_47=generate_grid2(moddiff(3,d%3),moddiff(47,d%47),d**.5*((3**.5)-(1/(3**.5))))
@@ -362,7 +371,7 @@ print('generate_grid2',endtime-starttime)
 print(grid1)
 grid_2_53_19_23=None
 grid_7_41_11_37=None
-
+'''
 starttime=datetime.now()
 grid2=generate_grid2(grid_3_47_17_19,grid_5_43_13_31,d**.5*((3**.5)-(1/(3**.5))))
 endtime=datetime.now()
@@ -377,8 +386,5 @@ endtime=datetime.now()
 print('generate_grid2',endtime-starttime)
 print(grid)
 '''
-print(diophantine(30,17,41,11))  
-print(diophantine(30,1,41,0))  
-print(diophantine(30,0,41,1))  
 
 #67297116731534860170
