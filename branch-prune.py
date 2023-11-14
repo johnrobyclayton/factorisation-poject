@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-
+#simplest and most expensive way to generate grid
 def generate_grid(x, y):
     grid=dict()
     for n in range(0,int(x[0]*y[0])):
@@ -8,7 +8,7 @@ def generate_grid(x, y):
             grid[(n%x[0],n%y[0])]=n
     return((x[0]*y[0],sorted(set(grid.values()))))
 
-
+#prime number generator
 def primegen():
     listofprimes=list()
     if len(listofprimes)==0:
@@ -26,58 +26,7 @@ def primegen():
         listofprimes.append(nextstart)
         yield listofprimes[-1]
 
-def generate_diagonalSequence(p,q):
-    #p is the smaller value
-    #q is the larger value
-    #p and q are coprime
-    #In a grid q wide and p high
-    #nimber the cells starting from (p,q) (0,0) equals 0
-    #Increase p and q by 1 each for the next cell which equals 1
-    #continue increasing the cell value by 1 each time
-    #continue until p is at p-1 and then p goes back to 0 
-    #and then continue with p increasing with q 
-    #and incrementing the value of the cell by 1 at each step
-    #due to p and q being coprime this will continue until 
-    #the entire grid is filled with numbers in sequence from0 to p*q-1
-    #this function generates the values of the cell and q-p returned as a tuple
-    #for each of the cells where p or q is 0.
-    
-    if p==q:
-        return [(0,0)]
-    start=0
-    diag=0
-    diagp=diag
-    diagq=diag
-    next=0
-    nextd=p
-    if next>0:
-        diagp+=p
-        diag=diagp
-    elif next<0:
-        diagq+=q
-        diag=diagq
-    elif next==0:
-        diag=0
-    returnlist=list()
-    returnlist.append((start,diag))
-    next=p
-    while next!=0:
-        start=next
-        if next>0:
-            diagp+=p
-            diag=diagp
-        elif next<0:
-            diagq+=q
-            diag=diagq
-        returnlist.append((start,diag))
-        if(p+start>q):
-            next=start-q
-        elif p+start<q:
-            next=start+p
-        elif p+start==q:
-            next=0
-    return returnlist
-
+#extended GCD
 def GCD(a, b):
     if a == 0: 
         return b, 0, 1
@@ -85,7 +34,12 @@ def GCD(a, b):
     y1 = s 
     x1 = t - (b//a) * s
     return gcd, x1, y1
-
+def MULINV(a,b):
+    gcd,x,y=GCD(a,b)
+    if x<0:
+        return x+b
+    else:
+        return x
 #solve ax+b=cy+d given a,b,c,d
 
 #a*x+b=c*x+d
@@ -150,8 +104,6 @@ def diophantine2():
     pass
 
 def generate_diagonalSequence2(p,q,maxval):
-    #p is the smaller value
-    #q is the larger value
     #p and q are coprime
     #In a grid q wide and p high
     #nimber the cells starting from (p,q) (0,0) equals 0
@@ -164,6 +116,7 @@ def generate_diagonalSequence2(p,q,maxval):
     #the entire grid is filled with numbers in sequence from0 to p*q-1
     #this function generates the values of the cell and q-p returned as a tuple
     #for each of the cells where p or q is 0.
+    #do nolt bother claculating for leading figures greater than maxval
     
     if p==q:
         return [(0,0)]
@@ -345,8 +298,24 @@ def diophantine_base(x,y):
     # diophantine_base is values at coordinates (0,1) and (1,0)
     # return (10,6)
     # return y*(multiplicative inverse of x to modulus y) , x*(multiplicative inverse of y to modulus x)
+    #   0 | 1 | 2 | 3 | 4
+    # --------------------- 
+    #0| 0 | 6 |12 | 3 | 9
+    #1|10 | 1 | 7 |13 | 4
+    #2| 5 |11 | 2 | 8 |14
+    #3|
+    #4|
     return(x*diophantine(x,0,y,1)[1],y*diophantine(x,1,y,0)[2])
+
+def mulinv(a,b):
+    #return c such that a*c%b=1 
+    pass
 
 print(diophantine_result(3,1,5,2))
 print(fast_diophantine_result(3,1,5,2))
 print(diophantine_base(3,5))
+print(GCD(47,7))
+print(MULINV(7,5))
+print(MULINV(5,7))
+print(MULINV(7,5)*7)
+print(MULINV(5,7)*5)
