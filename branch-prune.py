@@ -308,7 +308,7 @@ def generate_grid3(grid1, grid2, maxval):
     grid=dict()
     gridsize=grid1[0]*grid2[0]
     grid[gridsize]=set()
-    A1=grid1[0]*diophantine(grid1[0],0,grid2[0],1)[1]
+    A1=grid1[0]*(diophantine(grid1[0],0,grid2[0],1))[1]
     A2=grid2[0]*(diophantine(grid1[0],1,grid2[0],0))[2]
     #print(grid1[1])
     #print(grid2[1])
@@ -321,108 +321,32 @@ def generate_grid3(grid1, grid2, maxval):
                 grid[gridsize].add(candidate)
     return (gridsize,tuple(sorted(grid[gridsize])))
 
+def diophantine_result(a,b,c,d):
 
+    return(a*c,diophantine(a,b,c,d)[1]*a+b)
+    
 
+def fast_diophantine_result(a,b,c,d):
+    A=a*diophantine(a,0,c,1)[1]
+    print(A)
+    C=c*diophantine(a,1,c,0)[2]
+    print(C)
+    return(a*c,(A*d+C*b)%(a*c))
 
-p=2447321
-q=6353173
-d=p*q
-#d=299
+def diophantine_base(x,y):
+    #diophantine ax+b=cy+d
+    #example 3x+2=5y+3
+    #   0 | 1 | 2 | 3 | 4
+    # --------------------- 
+    #0| 0 | 6 |12 | 3 | 9
+    #1|10 | 1 | 7 |13 | 4
+    #2| 5 |11 | 2 | 8 |14
+    # result is 15x+8
+    # diophantine_base is values at coordinates (0,1) and (1,0)
+    # return (10,6)
+    # return y*(multiplicative inverse of x to modulus y) , x*(multiplicative inverse of y to modulus x)
+    return(x*diophantine(x,0,y,1)[1],y*diophantine(x,1,y,0)[2])
 
-#print('generate_grid',generate_grid((5,[1,4]),(7,[1,3,4,6])))
-#print('generate_coordinates',generate_coordinates((5,[1,4]),(7,[1,3,4,6])))
-#print('generate_diagonalsequence',generate_diagonalSequence(5,7))
-#print('split_coordinates',split_coordinates(generate_coordinates((5,[1,4]),(7,[1,3,4,6]))))
-#print('generate_grid2',generate_grid2((5,[1,4]),(7,[1,3,4,6])))
-#print('generate_grid2',generate_grid2((7,[1,3,4,6]),(5,[1,4])))
-'''
-currenttime=datetime.now()
-grid=generate_grid2(
-    moddiff(2,d%2),
-    moddiff(3,d%3)
-)
-endtime=datetime.now()
-print(grid[0],len(grid[1],),len(grid[1])/grid[0],endtime-currenttime)
-14924856
-'''
-
-grid_2_53=generate_grid2(moddiff(2,d%2),moddiff(53,d%53),d**.5*((3**.5)-(1/(3**.5))))
-#print(grid_2_53,d**.5*((3**.5)-(1/(3**.5))))
-grid_3_47=generate_grid2(moddiff(3,d%3),moddiff(47,d%47),d**.5*((3**.5)-(1/(3**.5))))
-#print(grid_3_47,d**.5*((3**.5)-(1/(3**.5))))
-grid_5_43=generate_grid2(moddiff(5,d%5),moddiff(43,d%43),d**.5*((3**.5)-(1/(3**.5))))
-#print(grid_5_43,d**.5*((3**.5)-(1/(3**.5))))
-grid_7_41=generate_grid2(moddiff(7,d%7),moddiff(41,d%41),d**.5*((3**.5)-(1/(3**.5))))
-#print(grid_7_41,d**.5*((3**.5)-(1/(3**.5))))
-grid_11_37=generate_grid2(moddiff(11,d%11),moddiff(37,d%37),d**.5*((3**.5)-(1/(3**.5))))
-#print(grid_11_37,d**.5*((3**.5)-(1/(3**.5))))
-grid_13_31=generate_grid2(moddiff(13,d%13),moddiff(31,d%31),d**.5*((3**.5)-(1/(3**.5))))
-#print(grid_13_31,d**.5*((3**.5)-(1/(3**.5))))
-grid_17_29=generate_grid2(moddiff(17,d%17),moddiff(29,d%29),d**.5*((3**.5)-(1/(3**.5))))
-#print(grid_17_29,d**.5*((3**.5)-(1/(3**.5))))
-grid_19_23=generate_grid2(moddiff(19,d%19),moddiff(23,d%23),d**.5*((3**.5)-(1/(3**.5))))
-#print(grid_19_23,d**.5*((3**.5)-(1/(3**.5))))
-
-grid_2_53_19_23=generate_grid2(grid_2_53,grid_19_23,d)
-#print(grid_2_53_19_23,d**.5*((3**.5)-(1/(3**.5))))
-#grid_2_53=None
-#grid_19_23=None
-#print(generate_grid2(grid_17_29,grid_19_23,d**.5*((3**.5)-(1/(3**.5)))))
-#print(generate_grid3(grid_17_29,grid_19_23,d**.5*((3**.5)-(1/(3**.5)))))
-
-
-
-
-grid_3_47_17_19=generate_grid3(grid_3_47,grid_17_29,d)
-print(grid_3_47_17_19[0],len(grid_3_47_17_19[1]),len(grid_3_47_17_19[1])/grid_3_47_17_19[0])
-#print(grid_3_47_17_19,d**.5*((3**.5)-(1/(3**.5))))
-grid_3_47=None
-grid_17_29=None
-
-
-
-
-
-
-grid_5_43_13_31=generate_grid3(grid_5_43,grid_13_31,d)
-print(grid_5_43_13_31[0],len(grid_5_43_13_31[1]),len(grid_5_43_13_31[1])/grid_5_43_13_31[0])
-#print(grid_5_43_13_31,d**.5*((3**.5)-(1/(3**.5))))
-grid_5_43=None
-grid_13_31=None
-
-grid_7_41_11_37=generate_grid3(grid_7_41,grid_11_37,d)
-print(grid_7_41_11_37[0],len(grid_7_41_11_37[1]),len(grid_7_41_11_37[1])/grid_7_41_11_37[0])
-#print(grid_7_41_11_37,d**.5*((3**.5)-(1/(3**.5))))
-grid_7_41=None
-grid_11_37=None
-
-
-
-
-
-starttime=datetime.now()
-grid_2_53_19_23_7_41_11_37=generate_grid3(grid_2_53_19_23,grid_7_41_11_37,(d**.5)*1.1)
-endtime=datetime.now()
-print(grid_2_53_19_23_7_41_11_37[0],len(grid_2_53_19_23_7_41_11_37[1]),len(grid_2_53_19_23_7_41_11_37[1])/grid_2_53_19_23_7_41_11_37[0])
-print('generate_grid3',endtime-starttime)
-#print(grid1,d**.5*((3**.5)-(1/(3**.5))))
-grid_2_53_19_23=None
-grid_7_41_11_37=None
-
-starttime=datetime.now()
-grid_3_47_17_19_5_43_13_31=generate_grid3(grid_3_47_17_19,grid_5_43_13_31,(d**.5)*1.1)
-endtime=datetime.now()
-print(grid_3_47_17_19_5_43_13_31[0],len(grid_3_47_17_19_5_43_13_31[1]),len(grid_3_47_17_19_5_43_13_31[1])/grid_3_47_17_19_5_43_13_31[0])
-print('generate_grid3',endtime-starttime)
-#print(grid2)
-grid_3_47_17_19=None
-grid_5_43_13_31=None
-
-starttime=datetime.now()
-grid=generate_grid3(grid_2_53_19_23_7_41_11_37,grid_3_47_17_19_5_43_13_31,(d**.5)*1.1)
-endtime=datetime.now()
-print('generate_grid3',endtime-starttime)
-print(grid)
-
-
-#67297116731534860170
+print(diophantine_result(3,1,5,2))
+print(fast_diophantine_result(3,1,5,2))
+print(diophantine_base(3,5))
