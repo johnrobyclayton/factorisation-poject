@@ -1,12 +1,5 @@
 from datetime import datetime, timedelta
 
-#simplest and most expensive way to generate grid
-def generate_grid(x, y):
-    grid=dict()
-    for n in range(0,int(x[0]*y[0])):
-        if n%x[0] in x[1] and n%y[0] in y[1]:
-            grid[(n%x[0],n%y[0])]=n
-    return((x[0]*y[0],sorted(set(grid.values()))))
 
 #prime number generator
 def primegen():
@@ -34,74 +27,69 @@ def GCD(a, b):
     y1 = s 
     x1 = t - (b//a) * s
     return gcd, x1, y1
+#multiplicative inverse
+#(a*MULINV(a,b))%b equivalent to 1
 def MULINV(a,b):
     gcd,x,y=GCD(a,b)
     if x<0:
         return x+b
     else:
         return x
-#solve ax+b=cy+d given a,b,c,d
-
-#a*x+b=c*x+d
-#A=a
-#B=-c
-#C=d-b
-#A*x+B*x=C
-def diophantine(a,b,c,d):
-  #a*x+b=c*y+d
-  '''
-  a=3
-  b=1
-  c=5
-  d=2
-  '''
-  #print(a,"* x +",b,"=",c,"* y +",d)
-  A=a
-  B=-c
-  C=d-b
-
-
-  '''
-  #Solve: 3x + 6y = 9 
-  #x
-  a = 3
-  #b
-  b = -5
-  #c
-  c = 2
-  '''
-  #Step 1
-  #print(A,B) 
-  if A==0 and B==0:
-    if C == 0: 
-      return(-1,0,0)#print("Infinite Solutions are possible")
-    else:
-      return(-2,0,0)#print("Solution not possible")
-
-  #Step 2 
-  gcd, x1, y1 = GCD(A,B)
-
-  #Step 3 and 4 
-  if (C % gcd == 0):
-    x = x1 * (C//gcd)
-    y = y1 * (C//gcd)
-    while(x<0):
-        x+=c
-    while(x>c):
-        x-=c    
-    y = y1 * (C//gcd)
-    while(y<0):
-        y+=a
-    while(y>a):
-        y-=a
-    #print("The values of x and y are: ", x, ",", y)
-    #print(a,'*(',c,'* x +',x,")+",b,"=",c,"* (",a,"* y +",y,")+",d)
-    return(0,x,y)
-  else:
-    return(-2,0,0)#print("Solution not possible") 
     
-def diophantine2():
-    pass
+
+def diophantine(a,b,c,d):
+    #solve ax+b=cy+d given a,b,c,d
+    #a*x+b=c*x+d
+    #A=a
+    #B=-c
+    #C=d-b
+    #A*x+B*x=C
+    #a*x+b=c*y+d
+    #print(a,"* x +",b,"=",c,"* y +",d)
+    A=a
+    B=-c
+    C=d-b
+
+
+    '''
+    #Solve: 3x + 6y = 9 
+    #x
+    a = 3
+    #b
+    b = -5
+    #c
+    c = 2
+    '''
+    #Step 1
+    #print(A,B) 
+    if A==0 and B==0:
+        if C == 0: 
+            return(-1,0,0)#print("Infinite Solutions are possible")
+        else:
+            return(-2,0,0)#print("Solution not possible")
+
+    #Step 2 
+    gcd, x1, y1 = GCD(A,B)
+
+    #Step 3 and 4 
+    if (C % gcd == 0):
+        x = x1 * (C//gcd)
+        y = y1 * (C//gcd)
+        while(x<0):
+            x+=c
+        while(x>c):
+            x-=c    
+        y = y1 * (C//gcd)
+        while(y<0):
+            y+=a
+        while(y>a):
+            y-=a
+        #print("The values of x and y are: ", x, ",", y)
+        #print(a,'*(',c,'* x +',x,")+",b,"=",c,"* (",a,"* y +",y,")+",d)
+        return(0,x,y)
+    else:
+        return(-2,0,0)#print("Solution not possible") 
+    
 
 def generate_diagonalSequence2(p,q,maxval):
     #p and q are coprime
@@ -158,13 +146,65 @@ def generate_diagonalSequence2(p,q,maxval):
             next=0
     return returnlist
     
+
+def moddiff(x,y):
+#Let product (d) be the product of integers (p,q)
+#let (x) be an integer coprime to (d)
+#let  (y) be equivalent to d(mod x)
+# (p(mod x)*q(mod x))(mod x) is equivalent to d(mod x)
+#for any d(mod x), or (y) there are a number of pairs of integers less than (x)
+#that when multiplied together and taken to (mod x) will be equialent to (y)
+#Example:
+#77(mod 3)=2
+#(1*2)(mod 3)=2
+#(2*1)(mod 3)=2
+#possible scenarios are:
+#p=3n+1
+#q=3n+2
+#or
+#p=3n+1
+#q=3n+2
+#where p>q
+#(p-q)(mod 3)=1 or 2
+#therefore the possible differences between p and q are 3n+1 or 3n+2
+#77(mod 5)=2
+#(1*2)(mod 5)=2
+#(2*1)(mod 5)=2
+#(3*4)(mod 5)=2
+#(4*3)(mod 5)=2
+#(p-q)(mod 3)=1 or 4
+#therefore the possible differences between p and q are 5n+1 or 5n+4
+#moddiff provides the possible differences between p and q  to mod(divisor)
+# for a given divisor and modulus 
+
+    diffset=set()
+    pp=set(range(1,x))
+    #print(pp)
+    while len(pp):
+        found=False
+        for i in pp:
+            for j in pp:
+                if (i*j)%x==y:
+                    diffset.add((x+i-j)%x)
+                    diffset.add((x-i+j)%x)
+                    pp.discard(i)
+                    pp.discard(j)
+                    found=True
+                if found:
+                    break
+            if found:
+                break
+    return((x,tuple(sorted(diffset))))        
+
+
+
     
 def generate_coordinates(p,q):
-    #p is the smaller value and the list of diffs of the smaller value
-    #q is the larger value and the list of diff of the larger value
+    #for each co-ordinate calculate the sum and the difference
     #when calculating the diff diagonal value
     #the value from the q list is subtracted from the value of the p list
     coords=dict()
+    
     for x in p[1]:
         for y in q[1]:
             coords[(x,y)]=dict()
@@ -204,26 +244,6 @@ def split_coordinates(coords):
     
 
 
-
-def moddiff(x,y):
-    diffset=set()
-    pp=set(range(1,x))
-    #print(pp)
-    while len(pp):
-        found=False
-        for i in pp:
-            for j in pp:
-                if (i*j)%x==y:
-                    diffset.add((x+i-j)%x)
-                    diffset.add((x-i+j)%x)
-                    pp.discard(i)
-                    pp.discard(j)
-                    found=True
-                if found:
-                    break
-            if found:
-                break
-    return((x,tuple(sorted(diffset))))        
 
 
 
@@ -274,6 +294,8 @@ def generate_grid3(grid1, grid2, maxval):
                 grid[gridsize].add(candidate)
     return (gridsize,tuple(sorted(grid[gridsize])))
 
+
+
 def diophantine_result(a,b,c,d):
 
     return(a*c,diophantine(a,b,c,d)[1]*a+b)
@@ -285,6 +307,9 @@ def fast_diophantine_result(a,b,c,d):
     C=c*diophantine(a,1,c,0)[2]
     print(C)
     return(a*c,(A*d+C*b)%(a*c))
+
+
+
 
 def diophantine_base(x,y):
     #diophantine ax+b=cy+d
@@ -298,25 +323,46 @@ def diophantine_base(x,y):
     # diophantine_base is values at coordinates (0,1) and (1,0)
     # return (10,6)
     # return y*(multiplicative inverse of x to modulus y) , x*(multiplicative inverse of y to modulus x)
-    #   0 | 1 | 2 | 3 | 4
-    # --------------------- 
-    #0| 0 | 6 |12 | 3 | 9
-    #1|10 | 1 | 7 |13 | 4
-    #2| 5 |11 | 2 | 8 |14
-    #3|
-    #4|
-    return(x*diophantine(x,0,y,1)[1],y*diophantine(x,1,y,0)[2])
+    #   0 | 1 | 2 
+    # ------------ 
+    #0| 0 |10 | 5 
+    #1| 6 | 1 |11 
+    #2|12 | 7 | 2 
+    #3| 3 |13 | 8
+    #4| 9 | 4 |14
+    invxy=MULINV(x,y)
+    invyx=MULINV(y,x)
+    return(x*invxy,y*invyx)
 
-def mulinv(a,b):
-    #return c such that a*c%b=1 
-    pass
-
-print(diophantine_result(3,1,5,2))
-print(fast_diophantine_result(3,1,5,2))
+#print(GCD(3,5))
+#print(GCD(5,3))
+#print(GCD(43,51))
+#print(GCD(51,43))
+#print(MULINV(3,5))
+#print(MULINV(5,3))
+#print(MULINV(43,51))
+#print(MULINV(51,43))
+#print(diophantine(3,1,5,2))
+#print(diophantine(5,2,3,1))
+#print(diophantine(43,1,51,2))
+#print(diophantine(51,2,43,1))
+print(diophantine(3,1,5,2))
+print(diophantine(5,2,3,1))
+print(diophantine(43,1,51,2))
+print(diophantine(51,2,43,1))
 print(diophantine_base(3,5))
-print(GCD(47,7))
-print(MULINV(7,5))
-print('m',MULINV(11,7))
-print('m',MULINV(7,11))
-print(MULINV(7,11)*7)
-print(MULINV(11,7)*11)
+print(diophantine_base(51,43))
+#print(generate_diagonalSequence2(3,5,100))
+#print(generate_diagonalSequence2(5,3,100))
+#print(generate_coordinates(moddiff(3,2),moddiff(5,1)))
+#print(generate_coordinates(moddiff(5,1),moddiff(3,2)))
+#print(split_coordinates(generate_coordinates(moddiff(5,1),moddiff(3,2))))
+#print(diophantine_result(3,1,5,2))
+#print(fast_diophantine_result(3,1,5,2))
+#print(diophantine_base(3,5))
+#print(GCD(47,7))
+#print(MULINV(7,5))
+#print('m',MULINV(11,7))
+#print('m',MULINV(7,11))
+#print(MULINV(7,11)*7)
+#print(MULINV(11,7)*11)
