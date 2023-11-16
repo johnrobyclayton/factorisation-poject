@@ -340,13 +340,35 @@ def moddiffdict(d):
         toreturn.append(dict())
         currentindex=len(toreturn)
         prime=next(primegenerator)
-        primeproduct*=prime
         toreturn[currentindex-1]["prime"]=prime
-        toreturn[currentindex-1]["primeproduct"]=primeproduct//prime
+        toreturn[currentindex-1]["primeproduct"]=primeproduct
         toreturn[currentindex-1]["diffs"]=tuple(sorted(moddiff(prime,d%prime)[1],reverse=True))
+        toreturn[currentindex-1]["diafbase"]=diophantine_base(primeproduct,prime)
+        primeproduct*=prime
     return toreturn
+
+def searchmoddiffdict(moddiffdict,primeindex):
+    print('diff',moddiffdict[primeindex-1])
+    ordereddiffs=list()
+    if primeindex==1:
+        moddiffdict[primeindex-1]["accumulated"]=moddiffdict[primeindex-1]["diffs"][0]
+    else:
+        for diff in moddiffdict[primeindex-1]['diffs']:
+            if "accumulated" in moddiffdict[primeindex-2]:
+                ordereddiffs.append((diff*moddiffdict[primeindex-1]['diafbase'][0]+moddiffdict[primeindex-2]['accumulated']*moddiffdict[primeindex-1]['diafbase'][1])%(moddiffdict[primeindex-1]['primeproduct']*moddiffdict[primeindex-1]['prime']))
+        ordereddiffs=sorted(ordereddiffs,reverse=True)
+    for biggestdiff in ordereddiffs:
+        moddiffdict[primeindex-1]["accumulated"]=biggestdiff
+        if primeindex<len(moddiffdict):
+            searchmoddiffdict(moddiffdict,primeindex+1)
+    #print(primeindex,len(moddiffdict))
+    #if primeindex<len(moddiffdict):
+        #searchmoddiffdict(moddiffdict,primeindex+1)
+
+
 
 moddiffdict_299=moddiffdict(299)
 print(moddiffdict_299)
+searchmoddiffdict(moddiffdict_299,1)
 
 
