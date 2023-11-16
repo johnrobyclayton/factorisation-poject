@@ -89,7 +89,45 @@ def diophantine(a,b,c,d):
         return(0,x,y)
     else:
         return(-2,0,0)#print("Solution not possible") 
+
+def diophantine_result(a,b,c,d):
+
+    return(a*c,diophantine(a,b,c,d)[1]*a+b)
     
+
+
+
+
+
+def diophantine_base(x,y):
+    #diophantine ax+b=cy+d
+    #example 3x+2=5y+3
+    #   0 | 1 | 2 | 3 | 4
+    # --------------------- 
+    #0| 0 | 6 |12 | 3 | 9
+    #1|10 | 1 | 7 |13 | 4
+    #2| 5 |11 | 2 | 8 |14
+    # result is 15x+8
+    # diophantine_base is values at coordinates (0,1) and (1,0)
+    # return (10,6)
+    # return y*(multiplicative inverse of x to modulus y) , x*(multiplicative inverse of y to modulus x)
+    #   0 | 1 | 2 
+    # ------------ 
+    #0| 0 |10 | 5 
+    #1| 6 | 1 |11 
+    #2|12 | 7 | 2 
+    #3| 3 |13 | 8
+    #4| 9 | 4 |14
+    invxy=MULINV(x,y)
+    invyx=MULINV(y,x)
+    return(x*invxy,y*invyx)
+
+def fast_diophantine_result(a,b,c,d):
+    (A,C)=diophantine_base(a,c)
+    #print(A)
+    #print(C)
+    return(a*c,(A*d+C*b)%(a*c))
+
 
 def generate_diagonalSequence2(p,q,maxval):
     #p and q are coprime
@@ -294,75 +332,21 @@ def generate_grid3(grid1, grid2, maxval):
                 grid[gridsize].add(candidate)
     return (gridsize,tuple(sorted(grid[gridsize])))
 
+def moddiffdict(d):
+    primegenerator=primegen()
+    toreturn=list()
+    primeproduct=1
+    while not primeproduct>d:
+        toreturn.append(dict())
+        currentindex=len(toreturn)
+        prime=next(primegenerator)
+        primeproduct*=prime
+        toreturn[currentindex-1]["prime"]=prime
+        toreturn[currentindex-1]["primeproduct"]=primeproduct//prime
+        toreturn[currentindex-1]["diffs"]=tuple(sorted(moddiff(prime,d%prime)[1],reverse=True))
+    return toreturn
+
+moddiffdict_299=moddiffdict(299)
+print(moddiffdict_299)
 
 
-def diophantine_result(a,b,c,d):
-
-    return(a*c,diophantine(a,b,c,d)[1]*a+b)
-    
-
-def fast_diophantine_result(a,b,c,d):
-    A=a*diophantine(a,0,c,1)[1]
-    print(A)
-    C=c*diophantine(a,1,c,0)[2]
-    print(C)
-    return(a*c,(A*d+C*b)%(a*c))
-
-
-
-
-def diophantine_base(x,y):
-    #diophantine ax+b=cy+d
-    #example 3x+2=5y+3
-    #   0 | 1 | 2 | 3 | 4
-    # --------------------- 
-    #0| 0 | 6 |12 | 3 | 9
-    #1|10 | 1 | 7 |13 | 4
-    #2| 5 |11 | 2 | 8 |14
-    # result is 15x+8
-    # diophantine_base is values at coordinates (0,1) and (1,0)
-    # return (10,6)
-    # return y*(multiplicative inverse of x to modulus y) , x*(multiplicative inverse of y to modulus x)
-    #   0 | 1 | 2 
-    # ------------ 
-    #0| 0 |10 | 5 
-    #1| 6 | 1 |11 
-    #2|12 | 7 | 2 
-    #3| 3 |13 | 8
-    #4| 9 | 4 |14
-    invxy=MULINV(x,y)
-    invyx=MULINV(y,x)
-    return(x*invxy,y*invyx)
-
-#print(GCD(3,5))
-#print(GCD(5,3))
-#print(GCD(43,51))
-#print(GCD(51,43))
-#print(MULINV(3,5))
-#print(MULINV(5,3))
-#print(MULINV(43,51))
-#print(MULINV(51,43))
-#print(diophantine(3,1,5,2))
-#print(diophantine(5,2,3,1))
-#print(diophantine(43,1,51,2))
-#print(diophantine(51,2,43,1))
-print(diophantine(3,1,5,2))
-print(diophantine(5,2,3,1))
-print(diophantine(43,1,51,2))
-print(diophantine(51,2,43,1))
-print(diophantine_base(3,5))
-print(diophantine_base(51,43))
-#print(generate_diagonalSequence2(3,5,100))
-#print(generate_diagonalSequence2(5,3,100))
-#print(generate_coordinates(moddiff(3,2),moddiff(5,1)))
-#print(generate_coordinates(moddiff(5,1),moddiff(3,2)))
-#print(split_coordinates(generate_coordinates(moddiff(5,1),moddiff(3,2))))
-#print(diophantine_result(3,1,5,2))
-#print(fast_diophantine_result(3,1,5,2))
-#print(diophantine_base(3,5))
-#print(GCD(47,7))
-#print(MULINV(7,5))
-#print('m',MULINV(11,7))
-#print('m',MULINV(7,11))
-#print(MULINV(7,11)*7)
-#print(MULINV(11,7)*11)
