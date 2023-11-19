@@ -107,7 +107,6 @@ def moddiff(x,y):
         return((1,(0,)))
     diffset=set()
     pp=set(range(1,x))
-    #print(pp)
     while len(pp):
         found=False
         for i in pp:
@@ -131,13 +130,17 @@ def moddiffdict(d):
     toreturn=list()
     primeproduct=1
     while not primeproduct>d:
-        toreturn.append(dict())
-        currentindex=len(toreturn)
+        
         prime=next(primegenerator)
-        toreturn[currentindex-1]["prime"]=prime
-        toreturn[currentindex-1]["primeproduct"]=primeproduct
-        toreturn[currentindex-1]["diffs"]=tuple(sorted(moddiff(prime,d%prime)[1],reverse=True))
-        toreturn[currentindex-1]["diafbase"]=diophantine_base(primeproduct,prime)
+        toreturn.append(dict())
+        currentindex=len(toreturn)-1
+        toreturn[currentindex]["prime"]=prime
+        toreturn[currentindex]["primeproduct"]=primeproduct
+        toreturn[currentindex]["diffs"]=tuple(sorted(moddiff(prime,d%prime)[1],reverse=True))
+        toreturn[currentindex]["diafbase"]=diophantine_base(primeproduct,prime)
+        toreturn[currentindex]["accumulated"]=0
+        toreturn[currentindex]["diff"]=0
+        toreturn[currentindex]["maxp"]=0
         primeproduct*=prime
     return toreturn
 
@@ -150,28 +153,39 @@ def testdiff(d,diff):
 def searchmoddiffdict(moddiffdict,primeindex,d,maxdiff,found):
     #print('diff',moddiffdict[primeindex-1])
     ordereddiffs=list()
-    if primeindex==1:
-        moddiffdict[primeindex-1]["accumulated"]=moddiffdict[primeindex-1]["diffs"][0]
-        found=searchmoddiffdict(moddiffdict,primeindex+1,d,maxdiff,found)
-    else:
-        for diff in moddiffdict[primeindex-1]['diffs']:
-            #if "accumulated" in moddiffdict[primeindex-2] and found==False:
-            ordereddiffs.append((diff*moddiffdict[primeindex-1]['diafbase'][0]+moddiffdict[primeindex-2]['accumulated']*moddiffdict[primeindex-1]['diafbase'][1])%(moddiffdict[primeindex-1]['primeproduct']*moddiffdict[primeindex-1]['prime']))
-        ordereddiffs=sorted(ordereddiffs,reverse=True)
-        
-        for biggestdiff in ordereddiffs:
-            moddiffdict[primeindex-1]["accumulated"]=biggestdiff
-            #print(ordereddiffs,moddiffdict[primeindex-1]["accumulated"],moddiffdict[primeindex-2]["accumulated"])
-            if moddiffdict[primeindex-1]["accumulated"]==moddiffdict[primeindex-2]["accumulated"] and found==False:
-                #print(moddiffdict[primeindex-1]["accumulated"])
-                if testdiff(d,moddiffdict[primeindex-1]["accumulated"]):
-                    difference=moddiffdict[primeindex-1]["accumulated"]//2
-                    average=isqrt(d+difference**2)
-                    print(d,average+difference,average-difference)
-                    found=True
-                    break
-            if primeindex<len(moddiffdict) and found==False and moddiffdict[primeindex-1]["accumulated"]<maxdiff:
-                found=searchmoddiffdict(moddiffdict,primeindex+1,d,maxdiff,found)
+    for diff in moddiffdict[primeindex-1]['diffs']:
+        ordereddiffs.append(dict())
+        ordereddiffs[len(ordereddiffs)-1]["diff"]=diff
+        ordereddiffs[len(ordereddiffs)-1]["calcdiff"]=(diff*moddiffdict[primeindex-1]['diafbase'][0]+moddiffdict[primeindex-2]['accumulated']*moddiffdict[primeindex-1]['diafbase'][1])%(moddiffdict[primeindex-1]['primeproduct']*moddiffdict[primeindex-1]['prime'])
+    ordereddiffs=sorted(ordereddiffs,key=lambda x: x["calcdiff"],reverse=True)
+    
+    for biggestdiff in ordereddiffs:
+        moddiffdict[primeindex-1]["gcd"]=GCD(moddiffdict[primeindex-1]["accumulated"],moddiffdict[primeindex-1]["diff"])
+        moddiffdict[primeindex-1]["accumulated"]=biggestdiff["calcdiff"]
+        moddiffdict[primeindex-1]["diff"]=biggestdiff["diff"]
+        if moddiffdict[primeindex-1]["primeproduct"]>maxdiff and found==False:
+            
+            if moddiffdict[primeindex-1]["accumulated"]<maxdiff:
+                if primeindex-1>=moddiffdict[0]['maxp']:
+                    if moddiffdict[primeindex-1]["accumulated"]==moddiffdict[primeindex-2]["accumulated"]:
+                        #print(moddiffdict[primeindex-1]["accumulated"],maxdiff,primeindex-1)
+                        moddiffdict[0]['maxp']=primeindex-1
+                        
+                        if moddiffdict[primeindex-2]["accumulated"]!=0:
+                            moddiffdict[primeindex-1]['acrate']=moddiffdict[primeindex-1]["accumulated"]/moddiffdict[primeindex-2]["accumulated"]
+                        if testdiff(d,moddiffdict[primeindex-1]["accumulated"]):
+                            difference=moddiffdict[primeindex-1]["accumulated"]//2
+                            average=isqrt(d+difference**2)
+                            print(d,average+difference,average-difference,primeindex-1,moddiffdict[0]['maxp'])
+                            for i in range(primeindex-1,0,-1):
+                                print(moddiffdict[i])
+                            found=True
+                            break
+        if (primeindex<len(moddiffdict) 
+            and found==False 
+            and moddiffdict[primeindex-1]["accumulated"]<maxdiff):
+            #and moddiffdict[primeindex-1]["primeproduct"]*200<maxdiff):
+            found=searchmoddiffdict(moddiffdict,primeindex+1,d,maxdiff,found)
     return found
     #print(primeindex,len(moddiffdict))
     #if primeindex<len(moddiffdict):
@@ -195,14 +209,14 @@ q=270463
 p=1400453
 q=2700833
 #time 0:00:00.153649
-p=14000801
-q=27001259
+#p=14000801
+#q=27001259
 #time 0:00:00.004029
-#p=140000953
-#q=270001639
+p=140000953
+q=270001639
 #time 0:00:03.058141
-p=1400000999
-q=2700001657
+#p=1400000999
+#q=2700001657
 #time 0:00:34.640859
 #p=14000002063
 #q=27000002621
@@ -210,16 +224,27 @@ q=2700001657
 #p=140000001061
 #q=270000001717
 #time 0:14:06.851745
-p=140000002951
-q=270000003979
+#p=140000002951
+#q=270000003979
 #time 0:00:58.449312
 #p=40094690950920881030683735292761468389214899724061
 #q=37975227936943673922808872755445627854565536638199
 d=p*q
-maxdiff=int(isqrt(d)*1.2)
+#d=d*863*863
+#d=d*(isqrt(d)+isqrt(isqrt(d)))(isqrt(d)-isqrt(isqrt(d)))
+
+maxdiff=int(isqrt(d)*3**.5-1/(3**.5))
 starttime=datetime.now()
 searchmoddiffdict(moddiffdict(d),1,d,maxdiff,False)
 endtime=datetime.now()
 print('time',endtime-starttime)
 
+'''
+primegenerator=primegen()
+prime=next(primegenerator)
+while prime<50:
+    if d ** ((prime - 2) // 2) % prime != 1 or True:
+        print(d ** ((prime - 2) // 2) % prime,moddiff(prime,d%prime))
+    prime=next(primegenerator)
+'''
 
