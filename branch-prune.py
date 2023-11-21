@@ -152,35 +152,40 @@ def testdiff(d,diff):
 
 def searchmoddiffdict(moddiffdict,primeindex,d,maxdiff,found):
     #print('diff',moddiffdict[primeindex-1])
+    mod4=d%4
     ordereddiffs=list()
     for diff in moddiffdict[primeindex-1]['diffs']:
         ordereddiffs.append(dict())
-        ordereddiffs[len(ordereddiffs)-1]["diff"]=diff
+        ##ordereddiffs[len(ordereddiffs)-1]["diff"]=diff
         ordereddiffs[len(ordereddiffs)-1]["calcdiff"]=(diff*moddiffdict[primeindex-1]['diafbase'][0]+moddiffdict[primeindex-2]['accumulated']*moddiffdict[primeindex-1]['diafbase'][1])%(moddiffdict[primeindex-1]['primeproduct']*moddiffdict[primeindex-1]['prime'])
     ordereddiffs=sorted(ordereddiffs,key=lambda x: x["calcdiff"],reverse=True)
     
     for biggestdiff in ordereddiffs:
-        moddiffdict[primeindex-1]["gcd"]=GCD(moddiffdict[primeindex-1]["accumulated"],moddiffdict[primeindex-1]["diff"])
+        ##moddiffdict[primeindex-1]["gcd"]=GCD(moddiffdict[primeindex-1]["accumulated"],moddiffdict[primeindex-1]["diff"])
         moddiffdict[primeindex-1]["accumulated"]=biggestdiff["calcdiff"]
-        moddiffdict[primeindex-1]["diff"]=biggestdiff["diff"]
+        diffmod4=moddiffdict[primeindex-1]["accumulated"]%4
+        ##moddiffdict[primeindex-1]["diff"]=biggestdiff["diff"]
+        ##moddiffdict[primeindex-1]["mod4"]=moddiffdict[primeindex-1]["accumulated"]%16
         if moddiffdict[primeindex-1]["primeproduct"]>maxdiff and found==False:
             
             if moddiffdict[primeindex-1]["accumulated"]<maxdiff:
-                if primeindex-1>=moddiffdict[0]['maxp']:
+                ##if primeindex-1>=moddiffdict[0]['maxp']:
                     if moddiffdict[primeindex-1]["accumulated"]==moddiffdict[primeindex-2]["accumulated"]:
-                        #print(moddiffdict[primeindex-1]["accumulated"],maxdiff,primeindex-1)
-                        moddiffdict[0]['maxp']=primeindex-1
-                        
-                        if moddiffdict[primeindex-2]["accumulated"]!=0:
-                            moddiffdict[primeindex-1]['acrate']=moddiffdict[primeindex-1]["accumulated"]/moddiffdict[primeindex-2]["accumulated"]
-                        if testdiff(d,moddiffdict[primeindex-1]["accumulated"]):
-                            difference=moddiffdict[primeindex-1]["accumulated"]//2
-                            average=isqrt(d+difference**2)
-                            print(d,average+difference,average-difference,primeindex-1,moddiffdict[0]['maxp'])
-                            for i in range(primeindex-1,0,-1):
-                                print(moddiffdict[i])
-                            found=True
-                            break
+                        if mod4==3 and diffmod4==2 or mod4==1 and diffmod4==0:
+                            #print(moddiffdict[primeindex-1]["accumulated"],maxdiff,primeindex-1)
+                            #moddiffdict[0]['maxp']=primeindex-1
+                            
+                            ##if moddiffdict[primeindex-2]["accumulated"]!=0:
+                                ##moddiffdict[primeindex-1]['acrate']=moddiffdict[primeindex-1]["accumulated"]/moddiffdict[primeindex-2]["accumulated"]
+                            if testdiff(d,moddiffdict[primeindex-1]["accumulated"]):
+                                difference=moddiffdict[primeindex-1]["accumulated"]//2
+                                average=isqrt(d+difference**2)
+                                print(d,average+difference,average-difference,primeindex-1,moddiffdict[0]['maxp'])
+                                #for i in range(primeindex-1,0,-1):
+                                    #print(moddiffdict[i])
+                                found=True
+                                break
+                            #print(d%4,moddiffdict[primeindex-1]["accumulated"]%4)
         if (primeindex<len(moddiffdict) 
             and found==False 
             and moddiffdict[primeindex-1]["accumulated"]<maxdiff):
