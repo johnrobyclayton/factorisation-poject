@@ -162,11 +162,11 @@ def searchmoddiffdict(moddiffdict,primeindex,d,maxdiff,found):
     for biggestdiff in ordereddiffs:
         moddiffdict[primeindex-1]["accumulated"]=biggestdiff["calcdiff"]
         diffmod4=moddiffdict[primeindex-1]["accumulated"]%4
-        if moddiffdict[primeindex-1]["primeproduct"]>maxdiff and found==False:
-            if moddiffdict[primeindex-1]["accumulated"]<maxdiff:
-                if moddiffdict[primeindex-1]["accumulated"]==moddiffdict[primeindex-2]["accumulated"]:
-                    if mod4==3 and diffmod4==2 or mod4==1 and diffmod4==0:
-                            if testdiff(d,moddiffdict[primeindex-1]["accumulated"]):
+        if moddiffdict[primeindex-1]["primeproduct"]>maxdiff and found==False:#Is the primeproduct big enough to have a final difference?
+            if moddiffdict[primeindex-1]["accumulated"]<maxdiff:#Is the currently calculated difference less that the maximum expected difference?
+                if moddiffdict[primeindex-1]["accumulated"]==moddiffdict[primeindex-2]["accumulated"]:#Is the current difference the same as the previuous difference?
+                    if mod4==3 and diffmod4==2 or mod4==1 and diffmod4==0:#Is oe or eo?
+                            if testdiff(d,moddiffdict[primeindex-1]["accumulated"]):#Test if the difference is correce
                                 difference=moddiffdict[primeindex-1]["accumulated"]//2
                                 average=isqrt(d+difference**2)
                                 print(d,average+difference,average-difference,primeindex-1,moddiffdict[0]['maxp'])
@@ -176,7 +176,8 @@ def searchmoddiffdict(moddiffdict,primeindex,d,maxdiff,found):
                                 break
         if (primeindex<len(moddiffdict)#do we have more moddiffdicts to use? 
             and found==False #Have we found a solution already?
-            and moddiffdict[primeindex-1]["accumulated"]<maxdiff):#Have we already exceeded the likely size of the difference?
+            and moddiffdict[primeindex-1]["accumulated"]<maxdiff
+            and not moddiffdict[primeindex-1]["primeproduct"]>maxdiff):#Have we already exceeded the likely size of the difference?
             found=searchmoddiffdict(moddiffdict,primeindex+1,d,maxdiff,found)
     return found
 
@@ -203,8 +204,8 @@ q=2700833
 p=140000953
 q=270001639
 #time 0:00:03.058141
-#p=1400000999
-#q=2700001657
+p=1400000999
+q=2700001657
 #time 0:00:34.640859
 #p=14000002063
 #q=27000002621
