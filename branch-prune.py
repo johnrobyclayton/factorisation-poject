@@ -137,6 +137,7 @@ def moddiffdict(d):
         toreturn[currentindex]["prime"]=prime
         toreturn[currentindex]["primeproduct"]=primeproduct
         toreturn[currentindex]["diffs"]=tuple(sorted(moddiff(prime,d%prime)[1],reverse=True))
+        toreturn[currentindex]['mod']=d%prime
         toreturn[currentindex]["diafbase"]=diophantine_base(primeproduct,prime)
         toreturn[currentindex]["accumulated"]=0
         toreturn[currentindex]["diff"]=0
@@ -167,7 +168,7 @@ def searchmoddiffdict(moddiffdict,primeindex,d,maxdiff,found):
         ##moddiffdict[primeindex-1]["diff"]=biggestdiff["diff"]
         ##moddiffdict[primeindex-1]["mod4"]=moddiffdict[primeindex-1]["accumulated"]%16
         if moddiffdict[primeindex-1]["primeproduct"]>maxdiff and found==False:
-            
+            #do not look for differences greater than expected.
             if moddiffdict[primeindex-1]["accumulated"]<maxdiff:
                 ##if primeindex-1>=moddiffdict[0]['maxp']:
                     if moddiffdict[primeindex-1]["accumulated"]==moddiffdict[primeindex-2]["accumulated"]:
