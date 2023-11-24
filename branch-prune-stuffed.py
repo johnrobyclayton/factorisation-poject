@@ -139,9 +139,14 @@ def moddiff(x,y):
     return((x,tuple(sorted(diffset))))        
 
 
-def moddiffdict(d):
+def moddiffdict(d,start=1):
     #print('moddiffdict')
     primegenerator=primegen()
+    eat=1
+    prime=next(primegenerator)
+    while eat*prime<start:
+        eat*=prime
+        prime=next(primegenerator) 
     toreturn=list()
     primeproduct=1
     while not primeproduct>d:
@@ -166,25 +171,36 @@ def testdiff(d,diff):
     return d==((average-difference)*(average+difference))
 
 
-def searchmoddiffdict(moddiffdict,primeindex,d,maxdiff,found):
+def searchmoddiffdict(moddiffdict,primeindex,d,maxdiff,maxdepth,found):
+    #print(moddiffdict)
+    toreturn=tuple()
     mod4=d%4
     ordereddiffs=list()
+    #print(ordereddiffs)
+    #print(moddiffdict[primeindex-1]['diffs'])
     for diff in moddiffdict[primeindex-1]['diffs']:
         ordereddiffs.append(dict())
+        #print('diff',diff,'diafbase0',moddiffdict[primeindex-1]['diafbase'][0],'previous accumulated',moddiffdict[primeindex-2]['accumulated'],'diafbase1',moddiffdict[primeindex-1]['diafbase'][1],'primeproduct',moddiffdict[primeindex-1]['primeproduct'],'prime',moddiffdict[primeindex-1]['prime'])
         ordereddiffs[len(ordereddiffs)-1]["calcdiff"]=(diff*moddiffdict[primeindex-1]['diafbase'][0]+moddiffdict[primeindex-2]['accumulated']*moddiffdict[primeindex-1]['diafbase'][1])%(moddiffdict[primeindex-1]['primeproduct']*moddiffdict[primeindex-1]['prime'])
-    ordereddiffs=sorted(ordereddiffs,key=lambda x: x["calcdiff"],reverse=True)
+        #print(ordereddiffs[len(ordereddiffs)-1]["calcdiff"])
+    ordereddiffs=sorted(ordereddiffs,key=lambda x: x["calcdiff"],reverse=False)
+    #print(moddiffdict[primeindex-1])
+    #print(ordereddiffs)
     
     for biggestdiff in ordereddiffs:
+        #print(biggestdiff)
         moddiffdict[primeindex-1]["accumulated"]=biggestdiff["calcdiff"]
         diffmod4=moddiffdict[primeindex-1]["accumulated"]%4
-        if moddiffdict[primeindex-1]["primeproduct"]>maxdiff and found==False:#Is the primeproduct big enough to have a final difference?
-            if moddiffdict[primeindex-1]["accumulated"]<maxdiff:#Is the currently calculated difference less that the maximum expected difference?
-                if moddiffdict[primeindex-1]["accumulated"]==moddiffdict[primeindex-2]["accumulated"]:#Is the current difference the same as the previuous difference?
+        #if moddiffdict[primeindex-1]["primeproduct"]>maxdiff and found==False:#Is the primeproduct big enough to have a final difference?
+        if moddiffdict[primeindex-1]["accumulated"]<maxdiff and not found:#Is the currently calculated difference less that the maximum expected difference?
+                #if moddiffdict[primeindex-1]["accumulated"]==moddiffdict[primeindex-2]["accumulated"]:#Is the current difference the same as the previuous difference?
                     if mod4==3 and diffmod4==2 or mod4==1 and diffmod4==0:#Is oe or eo?
+                            #if moddiffdict[primeindex-1]["accumulated"]==376:
+                            #    print(d,moddiffdict[primeindex-1]["accumulated"])
                             if testdiff(d,moddiffdict[primeindex-1]["accumulated"]):#Test if the difference is correce
                                 difference=moddiffdict[primeindex-1]["accumulated"]//2
                                 average=isqrt(d+difference**2)
-                                print(d,average+difference,average-difference,primeindex-1,moddiffdict[0]['maxp'])
+                                toreturn=(d,average+difference,average-difference,primeindex-1,moddiffdict[0]['maxp'])
                                 #for i in range(primeindex-1,0,-1):
                                     #print(moddiffdict[i])
                                 found=True
@@ -192,9 +208,10 @@ def searchmoddiffdict(moddiffdict,primeindex,d,maxdiff,found):
         if (primeindex<len(moddiffdict)#do we have more moddiffdicts to use? 
             and found==False #Have we found a solution already?
             and moddiffdict[primeindex-1]["accumulated"]<maxdiff
-            and not moddiffdict[primeindex-1]["primeproduct"]>maxdiff):#Have we already exceeded the likely size of the difference?
-            found=searchmoddiffdict(moddiffdict,primeindex+1,d,maxdiff,found)
-    return found
+            and not moddiffdict[primeindex-1]["primeproduct"]>maxdiff#Have we already exceeded the likely size of the difference?
+            and primeindex<maxdepth):#at maximum depth?
+            (found,toreturn)=searchmoddiffdict(moddiffdict,primeindex+1,d,maxdiff,maxdepth,found)
+    return (found,toreturn)
 
 
 
@@ -214,8 +231,8 @@ if __name__=="__main__":
     p=1400453
     q=2700833
     #time 0:00:00.153649
-    #p=14000801
-    #q=27001259
+    p=14000801
+    q=27001259
     #time 0:00:00.004029
     p=140000953
     q=270001639
@@ -234,18 +251,31 @@ if __name__=="__main__":
     #time 0:00:58.449312
     #p=40094690950920881030683735292761468389214899724061
     #q=37975227936943673922808872755445627854565536638199
-    p=37
-    q=79
+    #p=37
+    #q=79
     d=p*q
     #d=d*863*863
     #d=d*(isqrt(d)+isqrt(isqrt(d)))(isqrt(d)-isqrt(isqrt(d)))
-    primeprodltd=primeprod(37*79,1)
+    primeprodltd=primeprod(15016*20,3)
+    #primeprodltd=primeprodltd//2
+    #print(primeprodltd)
     factord=d*primeprodltd
-    maxdiff=int(isqrt(d)*(3*primeprodltd)**.5-1/(3**.5))
-    print(d,primeprodltd,factord,maxdiff)
+    maxdiff=int(isqrt(d)*((3**.5*primeprodltd)-(1/(3**.5))))
+    #print(d,primeprodltd,factord,maxdiff,q*primeprodltd-p)
     #maxdiff=int(isqrt(d)*3**.5-1/(3**.5))
     #starttime=time.perf_counter()
-    #searchmoddiffdict(moddiffdict(d),1,d,maxdiff,False)
+    #searchmoddiffdict(moddiffdict(d*primeprodltd,primeprodltd),1,d*primeprodltd,maxdiff,1,False)
+    #searchmoddiffdict(moddiffdict(d*primeprodltd,primeprodltd),1,d*primeprodltd,maxdiff,2,False)
+    depth=5
+    result=searchmoddiffdict(moddiffdict(d*primeprodltd,primeprodltd),1,d*primeprodltd,maxdiff,depth,False)
+    while not result[0]:
+        depth+=1
+        result=searchmoddiffdict(moddiffdict(d*primeprodltd,primeprodltd),1,d*primeprodltd,maxdiff,depth,False)
+    #print(result)
+    print('p =',GCD(d,result[1][1])[0],'q =',GCD(d,result[1][2])[0],depth,primeprodltd,d)
+    #searchmoddiffdict(moddiffdict(d*primeprodltd,primeprodltd),1,d*primeprodltd,maxdiff,4,False)
+    #print(primeprodltd,d,d*primeprodltd,moddiffdict(d*primeprodltd,primeprodltd))
+    #print('db',diophantine_base(1,13),diophantine_base(13,17))
     #endtime=time.perf_counter()
     #print('time',endtime-starttime)
 

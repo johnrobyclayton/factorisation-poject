@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import time
-from multiprocessing import Pool
+
 #integer square root
 def isqrt(n):
     x = n
@@ -159,7 +159,7 @@ def searchmoddiffdict(moddiffdict,primeindex,d,maxdiff,found):
         ordereddiffs.append(dict())
         ordereddiffs[len(ordereddiffs)-1]["calcdiff"]=(diff*moddiffdict[primeindex-1]['diafbase'][0]+moddiffdict[primeindex-2]['accumulated']*moddiffdict[primeindex-1]['diafbase'][1])%(moddiffdict[primeindex-1]['primeproduct']*moddiffdict[primeindex-1]['prime'])
     ordereddiffs=sorted(ordereddiffs,key=lambda x: x["calcdiff"],reverse=True)
-    
+    #print(ordereddiffs)
     for biggestdiff in ordereddiffs:
         moddiffdict[primeindex-1]["accumulated"]=biggestdiff["calcdiff"]
         diffmod4=moddiffdict[primeindex-1]["accumulated"]%4
@@ -184,50 +184,50 @@ def searchmoddiffdict(moddiffdict,primeindex,d,maxdiff,found):
 
 
 
-p=149
-q=277
-#time 0:00:00
-p=1423
-q=2801
-#time 0:00:00
-p=14107
-q=27361
-#time 0:00:00.002041
-p=140053
-q=270463
-#time 0:00:00.012980
-p=1400453
-q=2700833
-#time 0:00:00.153649
-#p=14000801
-#q=27001259
-#time 0:00:00.004029
-p=140000953
-q=270001639
-#time 0:00:03.058141
-#p=1400000999
-#q=2700001657
-#time 0:00:34.640859
-#p=14000002063
-#q=27000002621
-#time 0:00:49.965088
-#p=140000001061
-#q=270000001717
-#time 0:14:06.851745
-#p=140000002951
-#q=270000003979
-#time 0:00:58.449312
-#p=40094690950920881030683735292761468389214899724061
-#q=37975227936943673922808872755445627854565536638199
-d=p*q
-#d=d*863*863
-#d=d*(isqrt(d)+isqrt(isqrt(d)))(isqrt(d)-isqrt(isqrt(d)))
 if __name__=="__main__":
+    p=149
+    q=277
+    #time 0:00:00
+    #p=1423
+    #q=2801
+    #time 0:00:00
+    #p=14107
+    #q=27361
+    #time 0:00:00.002041
+    p=140053
+    q=270463
+    #time 0:00:00.012980
+    #p=1400453
+    #q=2700833
+    #time 0:00:00.153649
+    p=14000801
+    q=27001259
+    #time 0:00:00.004029
+    p=140000953
+    q=270001639
+    #time 0:00:03.058141
+    #p=1400000999
+    #q=2700001657
+    #time 0:00:34.640859
+    #p=14000002063
+    #q=27000002621
+    #time 0:00:49.965088
+    #p=140000001061
+    #q=270000001717
+    #time 0:14:06.851745
+    #p=140000002951
+    #q=270000003979
+    #time 0:00:58.449312
+    #p=40094690950920881030683735292761468389214899724061
+    #q=37975227936943673922808872755445627854565536638199
+    d=p*q
+    #d=d*863*863
+    #d=d*(isqrt(d)+isqrt(isqrt(d)))(isqrt(d)-isqrt(isqrt(d)))
     maxdiff=int(isqrt(d)*3**.5-1/(3**.5))
     starttime=time.perf_counter()
     searchmoddiffdict(moddiffdict(d),1,d,maxdiff,False)
     endtime=time.perf_counter()
-    print('time',endtime-starttime)
+    print('time',endtime-starttime,d)
 
 '''
 primegenerator=primegen()
