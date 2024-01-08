@@ -266,7 +266,7 @@ if __name__=="__main__":
     #starttime=time.perf_counter()
     #searchmoddiffdict(moddiffdict(d*primeprodltd,primeprodltd),1,d*primeprodltd,maxdiff,1,False)
     #searchmoddiffdict(moddiffdict(d*primeprodltd,primeprodltd),1,d*primeprodltd,maxdiff,2,False)
-    depth=5
+    depth=6
     result=searchmoddiffdict(moddiffdict(d*primeprodltd,primeprodltd),1,d*primeprodltd,maxdiff,depth,False)
     while not result[0]:
         depth+=1
