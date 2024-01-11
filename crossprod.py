@@ -1,4 +1,5 @@
 import cupy as cp
+import numpy as np
 
 # Define the arrays
 array1 = []
@@ -25,9 +26,9 @@ print(cp.shape(array1_gpu))
 print(cp.shape(array3_gpu))
 
 # Calculate the cross product on the GPU
-cross_product_gpu = cp.add(array1_gpu, array3_gpu)
-
+add_gpu = cp.add(array1_gpu, array3_gpu)
+print(add_gpu)
 # Transfer the result back to the CPU if needed
-cross_product_cpu = cp.asnumpy(cross_product_gpu)
+add_cpu = np.add(array1,array3)
+print(add_cpu)
 
-print(cross_product_cpu)

@@ -90,184 +90,79 @@ def moddiffdict(d):
         
         prime=next(primegenerator)
         toreturn1.append(prime)
-        #currentindex=len(toreturn)-1
-        #toreturn[currentindex]["primeproduct"]=primeproduct
         toreturn2.append(list(sorted(moddiff(prime,d%prime)[1],reverse=True)))
-        #toreturn[currentindex]['mod']=d%prime
-        #toreturn[currentindex]["diafbase"]=diophantine_base(primeproduct,prime)
-        #toreturn[currentindex]["accumulated"]=0
-        #toreturn[currentindex]["diff"]=0
-        #toreturn[currentindex]["maxp"]=0
         primeproduct*=prime
     return (toreturn1,toreturn2)
 
-# Define a function for GPU computation
-@cp.fuse()
-def compute_mod_sum(arr, mod_value, max_value):
-    return cp.sum(arr) % mod_value < max_value
+def chunked_iterable(iterable, size):
+    it = iter(iterable)
+    while True:
+        chunk = tuple(itertools.islice(it, size))
+        if not chunk:
+            break
+        yield chunk
 
 
 prime1=13
 prime2=23
+prime1=127
+prime2=239
 product=prime1*prime2
+chunksize=10000
+limit = int(isqrt(product)*1.2)
+floatlimit=(product**.5)*1.2
 #print('moddiff',list(moddiff(5,product%5)[1]))
 mdifd=moddiffdict(product)
-p_gpu=cp.array(mdifd[0])
+#print(mdifd)
+#print(mdifd[1])
+
+p_gpu=np.array(mdifd[0])
 mul=list()
 primeprod=int(np.prod(p_gpu))
 for i in p_gpu:
-    base =primeprod//i
+    base =int(primeprod//i)
+    print(type(base))
     while base%i!= 1:
         base+=base
     mul.append(base)
 #print(mul)
+floatmul=np.array(mul,dtype=float)
+print('mul',mul)
+print('floatmul',floatmul)
 #print(mdifd[0])
 #print(mdifd[1])
 #print(np.shape(mdifd[1]))
 p_lists=mdifd[1]
-diffarray_gpu = cp.array(list(itertools.product(*p_lists)), dtype=int)
-#diffarray=np.array(list(itertools.product(tuple(mdifd[1]))),dtype=int)
-#print(diffarray_gpu)
+for chunk in chunked_iterable(itertools.product(*p_lists),10):
+    block=np.array(chunk)
+    floatblock=np.array(chunk,dtype=float)
+    #print('block',block)
+    #print('floatblock',floatblock)
+    block*=mul
+    floatblock*=floatmul
+    #print('mul*block',block)
+    #print('floatmul*floatblock',floatblock)
+    block=np.sum(block,axis=1)
+    floatblock=np.sum(floatblock,axis=1)
+    #print('sumblock',block)
+    #print('sumfloatblock',floatblock)
+    block=np.mod(block,primeprod)
+    floatblock=np.fmod(floatblock,primeprod)
+    #print('modblock',block)
+    #print('modfloatblock',floatblock)
+    block=np.where(block<limit)
+    floatblock=np.where(floatblock<floatlimit)
+    print('where block',block)
+    print('where floatblock',floatblock)
+    print(block[0][0])
+    print(floatblock[0][0])
 
-# Specify the mod values and maximum values
-mod_values = cp.prod(cp.array(mdifd[0]))
-#print(mod_values)
-max_values = 10  # You can adjust this based on your requirements
-# Create a Cupy array to store the filtered results
-
-
-filtered_result_gpu = cp.zeros_like(diffarray_gpu, dtype=bool)
-
-array1=list()
-array2=list()
-for i in range(0,10):
-    for j in range(0,10):
-        
-        array2.append(i*j)
-    array1.append(array2)
-print(array1)
-array3=list()
-array4=list()
-for i in range(0,10):
-    for j in range(0,10):
-        
-        array4.append(i*j)
-    array3.append(array2)
-print(array3)
-
-#print(filtered_result_gpu)
-'''
-# Perform the computation on the GPU asynchronously
-with cp.cuda.Device(0):  # Adjust the GPU device index if needed
-    stream = cp.cuda.Stream()
+    '''
+    for i in block:
+        d=i//2
+        aves=d**2+product
+        a=isqrt(aves)
     
-    # Filter the results asynchronously on the GPU
-    with stream:
-        cp.ElementwiseKernel(
-            'T x', 'bool y', 'y = compute_mod_sum(x, mod_values, max_values)', 'filter_kernel'
-        )(diffarray_gpu, filtered_result_gpu)
-
-# Transfer the filtered result back to the CPU for further processing
-filtered_result_cpu = cp.asnumpy(filtered_result_gpu)
-'''
-
-'''
-p_gpu=cp.array([2,3,5,7])
-
-p=[2,3,5,7]
-p[0]=[1]
-p[1]=[1,2]
-p[2]=[0,1,4]
-p[3]=[1,3,4,6]
-
-diffarray=np.array(list(itertools.product(p[0],p[1],p[2],p[3])),dtype=int)
-
-
-p_cpu=[2,3,5,7]
-mul=[]
-for i in p_cpu:
-    base =np.prod(p_cpu)//i
-    while base%i!= 1:
-        base+=base
-    mul.append(base)
-print(mul)
-print(mul*diffarray)
-print(np.sum(mul*diffarray,axis=1))
-print(sorted(np.sum(mul*diffarray,axis=1)%np.prod(p_cpu)))
-
-
-# Define the primes and associated lists
-p = [2, 3, 5, 7]
-p_lists = [[1], [1, 2], [0, 1, 4], [1, 3, 4, 6]]
-
-# Generate combinations using Cupy
-diffarray_cpu = np.array(list(itertools.product(*p_lists)), dtype=int)
-diffarray_gpu = cp.asarray(diffarray_cpu)
-
-# Define a function for GPU computation
-@cp.fuse()
-def compute_mod_sum(arr, mod_value, max_value):
-    return cp.sum(arr) % mod_value < max_value
-
-# Specify the mod values and maximum values
-mod_values = cp.prod(p)
-max_values = 10  # You can adjust this based on your requirements
-
-# Perform the computation on the GPU
-filtered_result_gpu = cp.compress(
-    compute_mod_sum(diffarray_gpu, mod_values, max_values),
-    diffarray_gpu,
-    axis=0,
-)
-
-# Transfer the result back to the CPU if needed
-filtered_result_cpu = cp.asnumpy(filtered_result_gpu)
-
-print(filtered_result_cpu)
-import itertools
-import numpy as np
-import cupy as cp
-
-# Define the primes and associated lists
-p = [2, 3, 5, 7]
-p_lists = [[1], [1, 2], [0, 1, 4], [1, 3, 4, 6]]
-
-# Generate combinations using Cupy
-diffarray_cpu = np.array(list(itertools.product(*p_lists)), dtype=int)
-diffarray_gpu = cp.asarray(diffarray_cpu)
-
-# Define a function for GPU computation
-@cp.fuse()
-def compute_mod_sum(arr, mod_value, max_value):
-    return cp.sum(arr) % mod_value < max_value
-
-# Specify the mod values and maximum values
-mod_values = cp.prod(p)
-max_values = 10  # You can adjust this based on your requirements
-
-# Create a Cupy array to store the filtered results
-filtered_result_gpu = cp.zeros_like(diffarray_gpu, dtype=bool)
-
-# Perform the computation on the GPU asynchronously
-with cp.cuda.Device(0):  # Adjust the GPU device index if needed
-    stream = cp.cuda.Stream()
-    
-    # Filter the results asynchronously on the GPU
-    with stream:
-        cp.ElementwiseKernel(
-            'T x', 'bool y', 'y = compute_mod_sum(x, mod_value, max_value)', 'filter_kernel'
-        )(diffarray_gpu, filtered_result_gpu)
-
-# Transfer the filtered result back to the CPU for further processing
-filtered_result_cpu = cp.asnumpy(filtered_result_gpu)
-
-# Continue with the remaining computations on the GPU
-
-# Synchronize the CPU and GPU to ensure all asynchronous operations are complete
-cp.cuda.Stream.null.synchronize()
-
-# Further processing on the CPU with the filtered results
-cpu_result = diffarray_cpu[filtered_result_cpu]
-
-print(cpu_result)
-'''
+        if ((a+d)*(a-d))==product:
+            print('woohoo',a+d,a-d,product)
+    '''
