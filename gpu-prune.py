@@ -105,36 +105,55 @@ def chunked_iterable(iterable, size):
 
 prime1=13
 prime2=23
-prime1=127
-prime2=239
+prime1=11159
+prime2=13007
+prime1=111821
+prime2=132911
+prime1=1316519
+prime2=2116921
+prime1=21159653
+prime2=39161119
 product=prime1*prime2
 chunksize=10000
 limit = int(isqrt(product)*1.2)
 floatlimit=(product**.5)*1.2
-#print('moddiff',list(moddiff(5,product%5)[1]))
 mdifd=moddiffdict(product)
-#print(mdifd)
-#print(mdifd[1])
+#print('moddiffdict0',mdifd[0])
+#print('moddiffdict1',mdifd[1])
 
 p_gpu=np.array(mdifd[0])
+#print('p_gpu',p_gpu)
 mul=list()
-primeprod=int(np.prod(p_gpu))
+primeprod=int(1)
+for prime in p_gpu:
+    primeprod*=prime
+    print('primeprod',primeprod)
+#primeprod=int(np.prod(p_gpu))
+#print('primeprod',primeprod)
 for i in p_gpu:
+    print('primeprod',primeprod,'i',i)
     base =int(primeprod//i)
-    print(type(base))
-    while base%i!= 1:
-        base+=base
-    mul.append(base)
-#print(mul)
+    baseacc=base
+    print('base',base,'i',i,'base_i',base%i!=1)
+    while baseacc%i!= 1:
+        #print('2base',base,'i',i,'base_i',base%i!=1)
+        baseacc+=base
+        #print('3base',base,'base_i',base%i)
+    mul.append(baseacc)
+    #print(mul)
+    #break
+#print('mul',mul)
 floatmul=np.array(mul,dtype=float)
-print('mul',mul)
-print('floatmul',floatmul)
+#print('mul',mul)
+#print('floatmul',floatmul)
 #print(mdifd[0])
 #print(mdifd[1])
 #print(np.shape(mdifd[1]))
 p_lists=mdifd[1]
-for chunk in chunked_iterable(itertools.product(*p_lists),10):
+for chunk in chunked_iterable(itertools.product(*p_lists),1000):
     block=np.array(chunk)
+    
+    #print('chunk',chunk)
     floatblock=np.array(chunk,dtype=float)
     #print('block',block)
     #print('floatblock',floatblock)
@@ -149,20 +168,40 @@ for chunk in chunked_iterable(itertools.product(*p_lists),10):
     block=np.mod(block,primeprod)
     floatblock=np.fmod(floatblock,primeprod)
     #print('modblock',block)
-    #print('modfloatblock',floatblock)
+    #print('modfloatblock',floatblock,'floatlimit',floatlimit)
+    #print('floatlimit',floatlimit)
     block=np.where(block<limit)
     floatblock=np.where(floatblock<floatlimit)
-    print('where block',block)
-    print('where floatblock',floatblock)
-    print(block[0][0])
-    print(floatblock[0][0])
-
-    '''
-    for i in block:
-        d=i//2
+    #print('where block',block)
+    #print('where floatblock',floatblock)
+    #print(block[0][0])
+    #print(floatblock[0][0])
+    for i in floatblock[0]:
+        #if chunk[i][0]!=0 or chunk[i][1]!=2 or chunk[i][2]!=2 or chunk[i][3]!=1 or chunk[i][4]!=9:
+        #    continue
+        #print('chunk',chunk)
+        #print('chunki',chunk[i])
+        summ=0
+        #print('chunki',chunk[i],'mul',mul)
+        for diff in range(0,len(chunk[i])):
+            #print(('chunkidiff',chunk[i][diff],'muldiff',mul[diff]))
+            summ+=chunk[i][diff]*mul[diff]
+        modsumm=summ%primeprod
+        #print('modsumm',modsumm)
+        #print('chunkiiiiiiiiiiiiiiiiii',chunk[i])
+        #testblock=np.array(chunk)
+        #print('testblockchunk',testblock)
+        #testblock*=mul
+        #print('testblocknul',testblock)
+        #testblock=np.sum(testblock,axis=1)
+        #print('testblocksum',testblock)
+        #testblock=np.mod(testblock,primeprod)
+        #print('testblockmod',testblock)
+        #testblock=(testblock[np.where(testblock<limit)])
+        #print('testblocklimit',testblock)
+        d=modsumm//2
         aves=d**2+product
         a=isqrt(aves)
     
         if ((a+d)*(a-d))==product:
             print('woohoo',a+d,a-d,product)
-    '''
