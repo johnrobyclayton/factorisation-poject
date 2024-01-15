@@ -1,6 +1,7 @@
-import numpy as np
-import cupy as cp
+#import numpy as np
+import cupy as np
 import itertools
+import time
 
 def isqrt(n):
     x = n
@@ -113,6 +114,10 @@ prime1=1316519
 prime2=2116921
 prime1=21159653
 prime2=39161119
+prime1=211597237
+prime2=391612537
+prime1=2115973337
+prime2=3916113499
 product=prime1*prime2
 chunksize=10000
 limit = int(isqrt(product)*1.2)
@@ -126,15 +131,15 @@ p_gpu=np.array(mdifd[0])
 mul=list()
 primeprod=int(1)
 for prime in p_gpu:
-    primeprod*=prime
-    print('primeprod',primeprod)
+    primeprod*=int(prime)
+    #print('primeprod',primeprod)
 #primeprod=int(np.prod(p_gpu))
 #print('primeprod',primeprod)
 for i in p_gpu:
-    print('primeprod',primeprod,'i',i)
+    #print('primeprod',primeprod,'i',i)
     base =int(primeprod//i)
     baseacc=base
-    print('base',base,'i',i,'base_i',base%i!=1)
+    #print('base',base,'i',i,'base_i',base%i!=1)
     while baseacc%i!= 1:
         #print('2base',base,'i',i,'base_i',base%i!=1)
         baseacc+=base
@@ -150,58 +155,71 @@ floatmul=np.array(mul,dtype=float)
 #print(mdifd[1])
 #print(np.shape(mdifd[1]))
 p_lists=mdifd[1]
-for chunk in chunked_iterable(itertools.product(*p_lists),1000):
+found=False
+for chunk in chunked_iterable(itertools.product(*p_lists),10000000):
+    if found:
+        break
     block=np.array(chunk)
     
     #print('chunk',chunk)
     floatblock=np.array(chunk,dtype=float)
     #print('block',block)
     #print('floatblock',floatblock)
-    block*=mul
+    #block*=mul
     floatblock*=floatmul
     #print('mul*block',block)
     #print('floatmul*floatblock',floatblock)
-    block=np.sum(block,axis=1)
+    #block=np.sum(block,axis=1)
     floatblock=np.sum(floatblock,axis=1)
     #print('sumblock',block)
     #print('sumfloatblock',floatblock)
-    block=np.mod(block,primeprod)
+    #block=np.mod(block,primeprod)
     floatblock=np.fmod(floatblock,primeprod)
     #print('modblock',block)
     #print('modfloatblock',floatblock,'floatlimit',floatlimit)
     #print('floatlimit',floatlimit)
-    block=np.where(block<limit)
+    #block=np.where(block<limit)
     floatblock=np.where(floatblock<floatlimit)
     #print('where block',block)
     #print('where floatblock',floatblock)
     #print(block[0][0])
     #print(floatblock[0][0])
-    for i in floatblock[0]:
-        #if chunk[i][0]!=0 or chunk[i][1]!=2 or chunk[i][2]!=2 or chunk[i][3]!=1 or chunk[i][4]!=9:
-        #    continue
-        #print('chunk',chunk)
-        #print('chunki',chunk[i])
-        summ=0
-        #print('chunki',chunk[i],'mul',mul)
-        for diff in range(0,len(chunk[i])):
-            #print(('chunkidiff',chunk[i][diff],'muldiff',mul[diff]))
-            summ+=chunk[i][diff]*mul[diff]
-        modsumm=summ%primeprod
-        #print('modsumm',modsumm)
-        #print('chunkiiiiiiiiiiiiiiiiii',chunk[i])
-        #testblock=np.array(chunk)
-        #print('testblockchunk',testblock)
-        #testblock*=mul
-        #print('testblocknul',testblock)
-        #testblock=np.sum(testblock,axis=1)
-        #print('testblocksum',testblock)
-        #testblock=np.mod(testblock,primeprod)
-        #print('testblockmod',testblock)
-        #testblock=(testblock[np.where(testblock<limit)])
-        #print('testblocklimit',testblock)
-        d=modsumm//2
-        aves=d**2+product
-        a=isqrt(aves)
-    
-        if ((a+d)*(a-d))==product:
-            print('woohoo',a+d,a-d,product)
+    if len(floatblock[0])>0:
+        #print(floatblock[0])
+        print(len(floatblock[0]))
+        #print(time.perf_counter())
+        for i in floatblock[0]:
+            if found:
+                break
+            #if chunk[i][0]!=0 or chunk[i][1]!=2 or chunk[i][2]!=2 or chunk[i][3]!=1 or chunk[i][4]!=9:
+            #    continue
+            #print('chunk',chunk)
+            #print('chunki',chunk[i])
+            summ=0
+            #print('chunki',chunk[i],'mul',mul)
+            i=int(i)
+            #print(type(i))
+            #print(type(chunk))
+            for diff in range(0,len(chunk[i])):
+                #print(('chunkidiff',chunk[i][diff],'muldiff',mul[diff]))
+                summ+=chunk[i][diff]*mul[diff]
+            modsumm=summ%primeprod
+            #print('modsumm',modsumm)
+            #print('chunkiiiiiiiiiiiiiiiiii',chunk[i])
+            #testblock=np.array(chunk)
+            #print('testblockchunk',testblock)
+            #testblock*=mul
+            #print('testblocknul',testblock)
+            #testblock=np.sum(testblock,axis=1)
+            #print('testblocksum',testblock)
+            #testblock=np.mod(testblock,primeprod)
+            #print('testblockmod',testblock)
+            #testblock=(testblock[np.where(testblock<limit)])
+            #print('testblocklimit',testblock)
+            d=modsumm//2
+            aves=d**2+product
+            a=isqrt(aves)
+        
+            if ((a+d)*(a-d))==product:
+                print('woohoo',a+d,a-d,product)
+                found=True
