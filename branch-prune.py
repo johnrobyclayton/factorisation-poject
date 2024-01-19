@@ -187,7 +187,7 @@ def searchmoddiffdict(moddiffdict,primeindex,d,maxdiff,found):
 if __name__=="__main__":
     p=149
     q=277
-    #time 0:00:00
+    #time 0:00:00.
     #p=1423
     #q=2801
     #time 0:00:00
