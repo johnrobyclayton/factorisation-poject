@@ -123,17 +123,31 @@ def diophantine(a,b,c,d):
     return(-2,0,0)#print("Solution not possible") 
 
 
-def generate_grid3(factor1,list1, factor2,list2):
+def generate_grid4(factor1,list1, factor2,list2):
     gridsize=factor1*factor2
     A1=factor1*diophantine(factor1,0,factor2,1)[1]
     A2=factor2*diophantine(factor1,1,factor2,0)[2]
-    #print(grid1[1])
-    #print(grid2[1])
-    #print(A1,A2)
+    for a1 in list1:
+        for a2 in list2:
+            yield((gridsize,(A1*a2+A2*a1)%gridsize))
+
+def generate_grid5(factorlist1, factorlist2):
+    gridsize=factorlist1[0][0]*factorlist2[0][0]
+    A1=factorlist1[0][0]*diophantine(factorlist1[0][0],0,factorlist2[0][0],1)[1]
+    A2=factorlist2[0][0]*diophantine(factorlist1[0][0],1,factorlist2[0][0],0)[2]
+    for a1 in factorlist1:
+        for a2 in factorlist2:
+            yield((gridsize,(A1*a2[1]+A2*a1[1])%gridsize))
+   
+def generate_grid3(grid1, grid2):
+    grid=dict()
+    gridsize=grid1[0]*grid2[0]
+    grid[gridsize]=set()
+    A1=grid1[0]*diophantine(grid1[0],0,grid2[0],1)[1]
+    A2=grid2[0]*(diophantine(grid1[0],1,grid2[0],0))[2]
     for a1 in grid1[1]:
         for a2 in grid2[1]:
             candidate=(A1*a2+A2*a1)%gridsize
-            #print('A1',A1,'A2',A2,'a1',a1,'a2',a2,'candidate',candidate,'grid1',7,'grid2',11)
             grid[gridsize].add(candidate)
     return (gridsize,tuple(sorted(grid[gridsize])))
 
@@ -158,4 +172,6 @@ for index in range(0,25,1):
     #    print('primeprod',next(primeproductgenerator))
     except StopIteration:
         pass
-print(generate_grid3((13,(2,4,6,7,9,11)),(19,(1,3,5,7,12,14,16,18)),15*19))
+print(generate_grid3((7,(2,3,4,5)),(6,(0,2,4))))
+print(list(generate_grid4(7,(2,3,4,5),6,(0,2,4))))
+print(list(generate_grid5(((7,2),(7,3),(7,4),(7,5)),((6,0),(6,2),(6,4)))))
