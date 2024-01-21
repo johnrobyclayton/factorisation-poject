@@ -39,31 +39,6 @@ def primeproductuptogen(maxx):
         
         
         
-def moddiffgen(prime,mod):
-    if mod==0:
-        #print('mod is zero, moddiff of a factor impossible')
-        yield((1,(0,)))
-    pp=set(range(1,prime))
-    diffs=set()
-    while len(pp):
-        #print(pp)
-        found=False
-        for i in pp:
-            for j in pp:
-                if (i*j)%prime==mod:
-                    if (prime+i-j) not in diffs:
-                        #print(i,j,i*j,(i*j)%prime,prime,mod)
-                        diffs.add((prime+i-j)%prime)
-                        diffs.add((prime+i-j)%prime)
-                        yield((prime+i-j)%prime)
-                        yield((prime-i+j)%prime)
-                    pp.discard(i)
-                    pp.discard(j)
-                    found=True
-                if found:
-                    break
-            if found:
-                break
 
 def GCD(a, b):
     if a == 0: 
@@ -122,23 +97,6 @@ def diophantine(a,b,c,d):
   else:
     return(-2,0,0)#print("Solution not possible") 
 
-
-def generate_grid4(factor1,list1, factor2,list2):
-    gridsize=factor1*factor2
-    A1=factor1*diophantine(factor1,0,factor2,1)[1]
-    A2=factor2*diophantine(factor1,1,factor2,0)[2]
-    for a1 in list1:
-        for a2 in list2:
-            yield((gridsize,(A1*a2+A2*a1)%gridsize))
-
-def generate_grid5(factorlist1, factorlist2):
-    gridsize=factorlist1[0][0]*factorlist2[0][0]
-    A1=factorlist1[0][0]*diophantine(factorlist1[0][0],0,factorlist2[0][0],1)[1]
-    A2=factorlist2[0][0]*diophantine(factorlist1[0][0],1,factorlist2[0][0],0)[2]
-    for a1 in factorlist1:
-        for a2 in factorlist2:
-            yield((gridsize,(A1*a2[1]+A2*a1[1])%gridsize))
-   
 def generate_grid3(grid1, grid2):
     grid=dict()
     gridsize=grid1[0]*grid2[0]
@@ -151,6 +109,63 @@ def generate_grid3(grid1, grid2):
             grid[gridsize].add(candidate)
     return (gridsize,tuple(sorted(grid[gridsize])))
 
+def generate_grid4(factor1,list1, factor2,list2):
+    gridsize=factor1*factor2
+    A1=factor1*diophantine(factor1,0,factor2,1)[1]
+    A2=factor2*diophantine(factor1,1,factor2,0)[2]
+    for a1 in list1:
+        for a2 in list2:
+            yield((gridsize,(A1*a2+A2*a1)%gridsize))
+
+def moddiffgen(prime,mod):
+    if mod==0:
+        #print('mod is zero, moddiff of a factor impossible')
+        yield((1,(0,)))
+    pp=set(range(1,prime))
+    diffs=set()
+    while len(pp):
+        #print(pp)
+        found=False
+        for i in pp:
+            for j in pp:
+                if (i*j)%prime==mod:
+                    if ((prime+i-j)%prime) not in diffs:
+                        #print(i,j,i*j,(i*j)%prime,prime,mod,((prime+i-j)%prime))
+                        diffs.add((prime+i-j)%prime)
+                        diffs.add((prime-i+j)%prime)
+                        yield(prime,(prime+i-j)%prime)
+                        if ((prime+i-j)%prime)!=0:
+                            yield(prime,(prime-i+j)%prime)
+                    pp.discard(i)
+                    pp.discard(j)
+                    found=True
+                if found:
+                    break
+            if found:
+                break
+
+
+def gridgen(factorlist1, factorlist2):
+    islist1=True
+    islist2=True
+    try:
+        factor1=next(factorlist1)
+    except StopIteration:
+        islist1=False
+    try:
+        factor2=next(factorlist2)
+    except StopIteration:
+        islist2=False
+    factor2=next(factorlist2)
+    gridsize=factor1[0]*factor2[0]
+    A1=factor1[0]*diophantine(factor1[0],0,factor2[0],1)[1]
+    A2=factor2[0]*diophantine(factor1[0],1,factor2[0],0)[2]
+    for a1 in factorlist1:
+        for a2 in factorlist2:
+            yield((gridsize,(A1*a2[1]+A2*a1[1])%gridsize))
+   
+
+
 
     
 def chunked_iterable(iterable, size):
@@ -162,16 +177,16 @@ def chunked_iterable(iterable, size):
         yield chunk
 
 #primegenerator=primegen()
-#moddiffgenerator=moddiffgen(510510,765049*107133%510510)
+moddiffgenerator=moddiffgen(gridgen(11,5),gridgen(13,6))
+gridgenerator1=gridgen(11,5)
+gridgenerator2=gridgen(13,6)
+moddiffgenerator=moddiffgen(next(gridgenerator1),next(gridgenerator2))
 #primeproductgenerator=primeproductuptogen(1000000)
-for index in range(0,25,1):
+for index in range(0,50,1):
     #print('prime',next(primegenerator))
     try:
-        pass
-    #    print('moddiff',next(moddiffgenerator))
+        
+        print('moddiff',next(moddiffgenerator))
     #    print('primeprod',next(primeproductgenerator))
     except StopIteration:
         pass
-print(generate_grid3((7,(2,3,4,5)),(6,(0,2,4))))
-print(list(generate_grid4(7,(2,3,4,5),6,(0,2,4))))
-print(list(generate_grid5(((7,2),(7,3),(7,4),(7,5)),((6,0),(6,2),(6,4)))))
