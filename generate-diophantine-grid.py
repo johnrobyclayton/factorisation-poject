@@ -345,9 +345,19 @@ endtime=datetime.now()
 print(grid[0],len(grid[1],),len(grid[1])/grid[0],endtime-currenttime)
 14924856
 '''
+grid_2=moddiff(2,d%2)
+print(grid_2)
+grid_3=generate_grid2(grid_2,moddiff(3,d%3),(d**.5)*1.2)
+print(grid_3)
+grid_5=generate_grid2(grid_3,moddiff(5,d%5),(d**.5)*1.2)
+print(grid_5)
+grid_7=generate_grid2(grid_5,moddiff(7,d%7),(d**.5)*1.2)
+print(grid_7)
+grid_11=generate_grid2(grid_7,moddiff(11,d%11),(d**.5)*1.2)
+print(grid_11)
 
 grid_2_53=generate_grid2(moddiff(2,d%2),moddiff(53,d%53),d**.5*((3**.5)-(1/(3**.5))))
-#print(grid_2_53,d**.5*((3**.5)-(1/(3**.5))))
+print(grid_2_53,d**.5*((3**.5)-(1/(3**.5))))
 grid_3_47=generate_grid2(moddiff(3,d%3),moddiff(47,d%47),d**.5*((3**.5)-(1/(3**.5))))
 #print(grid_3_47,d**.5*((3**.5)-(1/(3**.5))))
 grid_5_43=generate_grid2(moddiff(5,d%5),moddiff(43,d%43),d**.5*((3**.5)-(1/(3**.5))))
@@ -399,7 +409,7 @@ grid_11_37=None
 
 
 
-
+'''
 starttime=datetime.now()
 grid_2_53_19_23_7_41_11_37=generate_grid3(grid_2_53_19_23,grid_7_41_11_37,(d**.5)*1.1)
 endtime=datetime.now()
@@ -408,7 +418,7 @@ print('generate_grid3',endtime-starttime)
 #print(grid1,d**.5*((3**.5)-(1/(3**.5))))
 grid_2_53_19_23=None
 grid_7_41_11_37=None
-
+''''''
 starttime=datetime.now()
 grid_3_47_17_19_5_43_13_31=generate_grid3(grid_3_47_17_19,grid_5_43_13_31,(d**.5)*1.1)
 endtime=datetime.now()
@@ -423,6 +433,6 @@ grid=generate_grid3(grid_2_53_19_23_7_41_11_37,grid_3_47_17_19_5_43_13_31,(d**.5
 endtime=datetime.now()
 print('generate_grid3',endtime-starttime)
 print(grid)
-
+'''
 
 #67297116731534860170

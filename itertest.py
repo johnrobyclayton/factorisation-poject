@@ -179,6 +179,93 @@ def generate_grid4(factor1,list1, factor2,list2):
         for a2 in list2:
             yield((gridsize,(A1*a2+A2*a1)%gridsize))
 
+def moddiff(prime,mod):
+    if mod==0:
+        #print('mod is zero, moddiff of a factor impossible')
+        return((1,(0,)))
+    pp=set(range(1,int(prime)))
+    diffs=set()
+    toreturn=[]
+    while len(pp):
+        #print(pp)
+        found=False
+        for i in pp:
+            for j in pp:
+                if (i*j)%prime==mod:
+                    if ((prime+i-j)%prime) not in diffs:
+                        #print(i,j,i*j,(i*j)%prime,prime,mod,((prime+i-j)%prime))
+                        diffs.add((prime+i-j)%prime)
+                        diffs.add((prime-i+j)%prime)
+                        toreturn.append((prime+i-j)%prime)
+                        if ((prime+i-j)%prime)!=0:
+                            toreturn.append((prime-i+j)%prime)
+                    pp.discard(i)
+                    pp.discard(j)
+                    found=True
+                if found:
+                    break
+            if found:
+                break
+    return toreturn
+
+def MULINV(a,b):
+    gcd,x,y=GCD(a,b)
+    if x<0:
+        return x+b
+    else:
+        return x
+    
+def diophantine_base(x,y):
+    #diophantine ax+b=cy+d
+    #example 3x+2=5y+3
+    #   0 | 1 | 2 | 3 | 4
+    # --------------------- 
+    #0| 0 | 6 |12 | 3 | 9
+    #1|10 | 1 | 7 |13 | 4
+    #2| 5 |11 | 2 | 8 |14
+    # result is 15x+8
+    # diophantine_base is values at coordinates (0,1) and (1,0)
+    # return (10,6)
+    # return y*(multiplicative inverse of x to modulus y) , x*(multiplicative inverse of y to modulus x)
+    #   0 | 1 | 2 
+    # ------------ 
+    #0| 0 |10 | 5 
+    #1| 6 | 1 |11 
+    #2|12 | 7 | 2 
+    #3| 3 |13 | 8
+    #4| 9 | 4 |14
+    invxy=MULINV(x,y)
+    invyx=MULINV(y,x)
+    return(x*invxy,y*invyx)
+
+
+def moddiffdict(d,start=1):
+    #print('moddiffdict')
+    primegenerator=primegen()
+    eat=1
+    prime=next(primegenerator)
+    while eat*prime<start:
+        eat*=prime
+        prime=next(primegenerator) 
+    toreturn=list()
+    primeproduct=1
+    while not primeproduct>d:
+        
+        prime=next(primegenerator)
+        toreturn.append(dict())
+        currentindex=len(toreturn)-1
+        toreturn[currentindex]["prime"]=prime
+        toreturn[currentindex]["primeproduct"]=primeproduct
+        toreturn[currentindex]["diffs"]=tuple(sorted(moddiff(prime,d%prime)))#[1],reverse=True))
+        toreturn[currentindex]['mod']=d%prime
+        toreturn[currentindex]["diafbase"]=diophantine_base(primeproduct,prime)
+        toreturn[currentindex]["accumulated"]=0
+        toreturn[currentindex]["diff"]=0
+        toreturn[currentindex]["maxp"]=0
+        primeproduct*=prime
+    return toreturn
+
+
 def moddiffgen(prime,mod):
     if mod==0:
         #print('mod is zero, moddiff of a factor impossible')
@@ -208,7 +295,7 @@ def moddiffgen(prime,mod):
 
 def floatmoddiffgen(prime,mod):
     if mod==0:
-        #print('mod is zero, moddiff of a factor impossible')
+        print('mod is zero, moddiff of a factor impossible')
         yield((1,(0,)))
     pp=set(range(1,int(prime)))
     diffs=set()
@@ -291,35 +378,56 @@ def chunked_iterable(iterable, size):
 
 #primegenerator=primegen()
 maxval=100
-p=163
-q=323
+p=1680013
+q=3300001
 d=p*q
 #moddiffgenerator=moddiffgen(gridgen(11,5),gridgen(13,6))
-floatmoddiffgenerator2=moddiffgen(2.0,d%2.0)
-floatmoddiffgenerator3=moddiffgen(3.0,d%3.0)
-'''
-gridgenerator6=gridgen(list(moddiffgenerator2),list(moddiffgenerator3),d**.5*1.2)
-moddiffgenerator5=moddiffgen(5.0,d%5.0)
-gridgenerator30=gridgen(list(gridgenerator6),list(moddiffgenerator5),d**.5*1.2)
-moddiffgenerator7=moddiffgen(7.0,d%7.0)
-gridgenerator210=gridgen(list(gridgenerator30),list(moddiffgenerator7),d**.5*1.2)
-moddiffgenerator11=moddiffgen(11.0,d%11.0)
-gridgenerator2310=gridgen(list(gridgenerator210),list(moddiffgenerator11),d**.5*1.2)
-moddiffgenerator13=moddiffgen(13.0,d%13.0)
-gridgenerator30030=gridgen(list(gridgenerator2310),list(moddiffgenerator13),d**.5*1.2)
-moddiffgenerator17=moddiffgen(17.0,d%17.0)
-gridgenerator510510=gridgen(list(gridgenerator30030),list(moddiffgenerator17),d**.5*1.2)
-'''
+floatmoddiffgenerator2=floatmoddiffgen(2.0,math.fmod(d,2.0))
+floatmoddiffgenerator3=floatmoddiffgen(3.0,math.fmod(d,3.0))
+
+floatgridgenerator6=floatgridgen(list(floatmoddiffgenerator2),list(floatmoddiffgenerator3),d**.5*1.2)
+floatmoddiffgenerator5=floatmoddiffgen(5.0,math.fmod(d,5.0))
+
+floatgridgenerator30=floatgridgen(list(floatgridgenerator6),list(floatmoddiffgenerator5),d**.5*1.2)
+floatmoddiffgenerator7=floatmoddiffgen(7.0,math.fmod(d,7.0))
+
+floatgridgenerator210=floatgridgen(list(floatgridgenerator30),list(floatmoddiffgenerator7),d**.5*1.2)
+floatmoddiffgenerator11=floatmoddiffgen(11.0,math.fmod(d,11.0))
+floatgridgenerator2310=floatgridgen(list(floatgridgenerator210),list(floatmoddiffgenerator11),d**.5*1.2)
+floatmoddiffgenerator13=floatmoddiffgen(13.0,math.fmod(d,13.0))
+floatgridgenerator30030=floatgridgen(list(floatgridgenerator2310),list(floatmoddiffgenerator13),d**.5*1.2)
+floatmoddiffgenerator17=floatmoddiffgen(17.0,math.fmod(d,17.0))
+floatgridgenerator510510=floatgridgen(list(floatgridgenerator30030),list(floatmoddiffgenerator17),d**.5*1.2)
+floatmoddiffgenerator19=floatmoddiffgen(19.0,math.fmod(d,19.0))
+floatgridgenerator9699690=floatgridgen(list(floatgridgenerator510510),list(floatmoddiffgenerator19),d**.5*1.2)
+floatmoddiffgenerator23=floatmoddiffgen(23.0,math.fmod(d,23.0))
+floatgridgenerator23=floatgridgen(list(floatgridgenerator9699690),list(floatmoddiffgenerator23),d**.5*1.2)
+floatmoddiffgenerator29=floatmoddiffgen(29.0,math.fmod(d,29.0))
+floatgridgenerator29=floatgridgen(list(floatgridgenerator23),list(floatmoddiffgenerator29),d**.5*1.2)
+floatmoddiffgenerator31=floatmoddiffgen(31.0,math.fmod(d,31.0))
+floatgridgenerator31=floatgridgen(list(floatgridgenerator29),list(floatmoddiffgenerator31),d**.5*1.2)
+floatmoddiffgenerator37=floatmoddiffgen(37.0,math.fmod(d,37.0))
+floatgridgenerator37=floatgridgen(list(floatgridgenerator31),list(floatmoddiffgenerator37),d**.5*1.2)
+floatmoddiffgenerator41=floatmoddiffgen(41.0,math.fmod(d,41.0))
+floatgridgenerator41=floatgridgen(list(floatgridgenerator37),list(floatmoddiffgenerator41),d**.5*1.2)
+floatmoddiffgenerator43=floatmoddiffgen(43.0,math.fmod(d,43.0))
+floatgridgenerator43=floatgridgen(list(floatgridgenerator41),list(floatmoddiffgenerator43),d**.5*1.2)
+floatmoddiffgenerator47=floatmoddiffgen(47.0,math.fmod(d,47.0))
+floatgridgenerator47=floatgridgen(list(floatgridgenerator43),list(floatmoddiffgenerator47),d**.5*1.2)
+floatmoddiffgenerator53=floatmoddiffgen(53.0,math.fmod(d,53.0))
+
 #moddiffgenerator=moddiffgen(next(gridgenerator1),next(gridgenerator2))
 #primeproductgenerator=primeproductuptogen(1000000)
-for index in range(0,50,1):
+for index in range(0,0,1):
     #print('prime',next(primegenerator))
     try:
-        print(next(floatmoddiffgenerator3))
-        #print(next(gridgenerator6))
+        print(next(floatgridgenerator47))
+        print(next(floatmoddiffgenerator53))
         #print(next(gridgenerator510510),d**.5*1.2)
         #print(next(gridgenerator1))
         #print('moddiff',next(moddiffgenerator))
     #    print('primeprod',next(primeproductgenerator))
     except StopIteration:
         pass
+print(moddiff(13,1))
+#print(moddiffdict(123456,1))
