@@ -65,17 +65,41 @@ def moddiff(prime,mod):
                 break
     return toreturn
 
+def searchmins(moddiffdict):
+    maxp=max(moddiffdict)
+    prime=moddiffdict[maxp]['prime']
+    primeprod=moddiffdict[maxp]['primeprod']
+    diffs=moddiffdict[maxp]['diffs']
+    primeprodmul=moddiffdict[maxp]['primeprodmul']
+    primemul=moddiffdict[maxp]['primemul']
+    
+    if maxp>2:
+        moddiffdict.pop(maxp,None)
+        print('notmaxmoddiff',maxp)
+        previous=searchmins(moddiffdict)
+        print('maxp',maxp,'previous',previous)
+        return maxp*previous
+    else:
+        print('maxmoddiff',2)
+        return 2
 
-p=13
-q=23
+p=7
+q=11
 d=p*q
 
 primeprod=1
 primegenerator=primegen()
+moddiffdict=dict()
 while primeprod<(d**.5)+1.2:
     prime=next(primegenerator)
-    print('prime mul',MULINV(prime,primeprod))
-    print('primeprod mul',MULINV(primeprod,prime))
-    print('primeprod',primeprod,'prime',prime)
+    moddiffdict[prime]=dict()
+    moddiffdict[prime]['prime']=prime
+    moddiffdict[prime]['primeprod']=primeprod
+    moddiffdict[prime]['diffs']=moddiff(prime,d%prime)
+    moddiffdict[prime]['primeprodmul']=MULINV(primeprod,prime)
+    moddiffdict[prime]['primemul']=MULINV(prime,primeprod)
+    #print(moddiffdict)
     primeprod*=prime
-    print(moddiff(prime,d%prime))
+for x in moddiffdict.keys():
+    print(moddiffdict[x])
+print(searchmins(moddiffdict))
