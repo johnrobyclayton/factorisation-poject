@@ -1,4 +1,5 @@
-
+import math
+import time
 
 #integer square root
 def isqrt(n):
@@ -49,9 +50,10 @@ def primegen():
 
 
 def moddiff(prime,mod):
+    #print(prime,mod)
     if mod==0:
         #print('mod is zero, moddiff of a factor impossible')
-        return((1,(0,)))
+        return([])
     pp=set(range(1,int(prime)))
     diffs=set()
     toreturn=[]
@@ -75,6 +77,7 @@ def moddiff(prime,mod):
                     break
             if found:
                 break
+    #print('diff to return',prime,toreturn)
     return toreturn
 
 def diophantine_base(x,y):
@@ -103,6 +106,9 @@ def diophantine_base(x,y):
 def searchmins(moddiffdict):
     maxp=0
     prime=0
+    #print('In a deeper search')
+    #for x in moddiffdict.keys():
+    #    print(moddiffdict[x])
     maxp=max(moddiffdict)
     prime=moddiffdict[maxp]['prime']
     primeprod=moddiffdict[maxp]['primeprod']
@@ -117,13 +123,15 @@ def searchmins(moddiffdict):
         #print('pop moddiffdict',moddiffdict,'maxp',maxp,'prime',prime)
         moddiffdict.pop(maxp,None)
         #print('pop moddiffdict',moddiffdict,'maxp',maxp,'prime',prime)
+        #print('Going into a deeper search')
         previous=searchmins(moddiffdict)
+        #print('leaving a deeper search')
         #print('prime1',prime)
         for pdiffs in previous:
             yields=dict()
             #print('localpdiffs init',localpdiffs)
             #print('prime',prime,'pdiffs',pdiffs,'diffs',diffs)
-            print('diffs',diffs)
+            #print('prime',prime,'diffs',diffs)
             for diff in diffs:#for each moddiff in the current prime
                 localpdiffs=[]#list to contain the current combination of differences from smaller primes and the selected diff from this prime
                 for pdiff in pdiffs:#for the string of diffs from each of the previous primes
@@ -131,16 +139,101 @@ def searchmins(moddiffdict):
                 localpdiffs.append(diff)#append the current diff for the current prime
                 #print('localpdiffs',localpdiffs,'mulllist',diffmul)
                 total=0#initialise the total
+                iprimeprod=primeprod*prime
+                #print('iprimeprod',iprimeprod)
                 for diff,muldiff in zip(localpdiffs,diffmul):#
                     if type(diff)==tuple: 
                         diff=0
-                    print(type(diff),diff,type(muldiff),muldiff,type(primeprod),primeprod,type(prime),prime)
-                    total=total+(diff*muldiff)%(primeprod*prime)
+                    #print(type(diff),diff,type(muldiff),muldiff,type(primeprod),primeprod,type(prime),prime)
+                    total=total+(diff*muldiff)%(iprimeprod)
+                    #print('totalacc',total)
                 total=total%(primeprod*prime)
+                #print('total',total)
                 #print('totalbefore yield',total)
                 if total <maxdiff:
                     #print('totalbefore yield',total)
                     yields[total]=localpdiffs
+                    #print(max(yields,default=False))
+                #    print('yields1',yields)
+                    #for x in yields:
+                    #    print('yield block',x,yields[x],max(yields,default=False))
+                    moretoyield=True
+                    try:
+                        toyield=yields[max(yields)]
+                    except (ValueError, StopIteration):
+                        moretoyield=False
+                    while moretoyield:
+                        #print('maxyields',(yields[max(yields)]))
+                        #print('toyield',toyield)
+                        yield toyield
+                        #print('reducing',yields)
+                        del yields[max(yields)]
+                        try:
+                            toyield=yields[max(yields)]
+                        except (ValueError, StopIteration):
+                            moretoyield=False
+    elif maxp==2:
+        #print('prime',prime,'diffs',diffs)
+        #print('we got to 2')
+        #print('prime2',prime)
+        toyield=list()
+        toyield.append(0)
+        #print('toyield',toyield)
+        yield toyield
+
+
+def searchminsfloat(moddiffdict):
+    maxp=0
+    prime=0
+    #print('In a deeper search')
+    #for x in moddiffdict.keys():
+    #    print(moddiffdict[x])
+    maxp=max(moddiffdict)
+    prime=moddiffdict[maxp]['prime']
+    primeprod=moddiffdict[maxp]['primeprod']
+    diffs=moddiffdict[maxp]['diffs']
+    primeprodmul=moddiffdict[maxp]['primeprodmul']
+    primemul=moddiffdict[maxp]['primemul']
+    diffmul=moddiffdict[maxp]['diffmullist']
+    maxdiff=float(moddiffdict[maxp]['maxdiff'])
+    #print('insearch maxp',maxp,'prime',prime,'primeprod',primeprod)
+    #print('insearch moddiffdict',moddiffdict)
+    if maxp>2:
+        #print('pop moddiffdict',moddiffdict,'maxp',maxp,'prime',prime)
+        moddiffdict.pop(maxp,None)
+        #print('pop moddiffdict',moddiffdict,'maxp',maxp,'prime',prime)
+        #print('Going into a deeper search')
+        previous=searchminsfloat(moddiffdict)
+        #print('leaving a deeper search')
+        #print('prime1',prime)
+        for pdiffs in previous:
+            yields=dict()
+            #print('localpdiffs init',localpdiffs)
+            #print('prime',prime,'pdiffs',pdiffs,'diffs',diffs)
+            #print('prime',prime,'diffs',diffs)
+            for diff in diffs:#for each moddiff in the current prime
+                localpdiffs=[]#list to contain the current combination of differences from smaller primes and the selected diff from this prime
+                for pdiff in pdiffs:#for the string of diffs from each of the previous primes
+                    localpdiffs.append(pdiff)#append to the local list of diffs
+                localpdiffs.append(diff)#append the current diff for the current prime
+                #print('localpdiffs',localpdiffs,'mulllist',diffmul)
+                total=0.0#initialise the total
+                floatprimeprod=float(primeprod)*float(prime)
+                #print('floatprimeprod',floatprimeprod)
+                for diff,mulldiff in zip(localpdiffs,diffmul):#
+                    if type(diff)==tuple: 
+                        diff=0.0
+                    diff=float(diff)
+                    mulldiff=float(mulldiff)
+                    #print(type(diff),diff,type(muldiff),muldiff,type(primeprod),primeprod,type(prime),prime)
+                    total=total+math.fmod((diff*mulldiff),floatprimeprod)
+                    #print('totalacc',total)
+                total=math.fmod(total,floatprimeprod)
+                #print('total',total)
+                #print('totalbefore yield',total)
+                if total <maxdiff:
+                    #print('totalbefore yield',total)
+                    yields[int(total)]=localpdiffs
                     #print(max(yields,default=False))
                     #print('yields1',yields)
                     #for x in yields:
@@ -152,6 +245,7 @@ def searchmins(moddiffdict):
                         moretoyield=False
                     while moretoyield:
                         #print('maxyields',(yields[max(yields)]))
+                        #print('toyield',toyield)
                         yield toyield
                         #print('reducing',yields)
                         del yields[max(yields)]
@@ -160,9 +254,15 @@ def searchmins(moddiffdict):
                         except (ValueError, StopIteration):
                             moretoyield=False
     elif maxp==2:
+        #print('prime',prime,'diffs',diffs)
         #print('we got to 2')
         #print('prime2',prime)
-        yield [0]
+        toyield=list()
+        toyield.append(0)
+        #print('toyield',toyield)
+        yield toyield
+
+
 
 def testdiff(d,diff):
     difference=diff//2
@@ -175,7 +275,7 @@ def makemoddiffdict(d):
     primeprod=1
     primegenerator=primegen()
     moddiffdict=dict()
-    while primeprod<(d):
+    while primeprod<(d**1):
         maxprime=max(moddiffdict,default=0)
         prime=next(primegenerator)
         moddiffdict[prime]=dict()
@@ -208,11 +308,15 @@ def makemoddiffdict(d):
         #print(moddiffdict)
         primeprod*=prime
     return moddiffdict    
+starttime=time.perf_counter()
+p=3202260623
+q=1602260927
 
-p=62233
-q=122251
-p=3
-q=5
+
+p=244026977
+q=124027177
+
+
 d=p*q
 moddiffdict=makemoddiffdict(d)
 #for x in moddiffdict.keys():
@@ -222,9 +326,15 @@ maxmoddiffdict=moddiffdict[maxprime]
 maxprimeprod=moddiffdict[maxprime]['primeprod']*maxprime
 maxdiffmul=maxmoddiffdict['diffmullist']
 #print('maxprime',maxprime,'maxprimeprod',maxprimeprod,'maxdiffmul',maxdiffmul)
-moddiffgen=searchmins(moddiffdict)
+
+
+#moddiffgen=searchmins(moddiffdict)
+moddiffgen=searchminsfloat(moddiffdict)
+
+
 more=True
 found=False
+tries=0
 while more and not found:
     try:
         candidate=next(moddiffgen)
@@ -236,9 +346,12 @@ while more and not found:
                 diff=0
             total=total+(diff*muldiff)%(maxprimeprod)
         total=total%(maxprimeprod)
-        print(candidate,maxdiffmul,maxprimeprod,total)
+        tries+=1
+        #print('candidate',candidate,'maxdiffmul',maxdiffmul,'maxprimeprod',maxprimeprod,'total',total)
         if testdiff(d,total):
             found=True
-            print('woohoo',candidate,[1/(x/maxprimeprod) for x in maxdiffmul],total,p,q,d)
+            print('woohoo',candidate,[1/(x/maxprimeprod) for x in maxdiffmul],total,p,q,d,'tries',tries)
     except StopIteration:
         more=False
+endtime=time.perf_counter()
+print(endtime-starttime)
