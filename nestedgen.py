@@ -271,11 +271,14 @@ def testdiff(d,diff):
 
 
 def makemoddiffdict(d):
-    maxdiff=(d**.5)+1.2
+    maxdiff=(d**.5)*1.2
     primeprod=1
+    difflenprod=1
     primegenerator=primegen()
     moddiffdict=dict()
-    while primeprod<(d**1):
+    while primeprod<(d**1) or prime<18:
+    #while (primeprod/difflenprod)*100<(((d**.5)*1.2)):
+        #print((primeprod/difflenprod)*100,((d**.5)*1.2))
         maxprime=max(moddiffdict,default=0)
         prime=next(primegenerator)
         moddiffdict[prime]=dict()
@@ -288,6 +291,7 @@ def makemoddiffdict(d):
                 moddiffdict[prime]['primelist'].append(pr)
         moddiffdict[prime]['primelist'].append(prime)
         moddiffdict[prime]['primeprod']=primeprod
+        moddiffdict[prime]['difflenprod']=difflenprod
         moddiffdict[prime]['diffmullist']=[]
         for pr in moddiffdict[prime]['primelist']:
             base =int(moddiffdict[prime]['primeprod']*prime//pr)
@@ -303,24 +307,28 @@ def makemoddiffdict(d):
             moddiffdict[prime]['diffmullist'].append(baseacc)
                 
         moddiffdict[prime]['diffs']=moddiff(prime,d%prime)
+        moddiffdict[prime]['difflen']=len(moddiffdict[prime]['diffs'])
         moddiffdict[prime]['primeprodmul']=MULINV(primeprod,prime)
         moddiffdict[prime]['primemul']=MULINV(prime,primeprod)
+        moddiffdict[prime]['avestep']= moddiffdict[prime]['primeprod']/moddiffdict[prime]['difflenprod']
         #print(moddiffdict)
         primeprod*=prime
+        difflenprod*=moddiffdict[prime]['difflen']
     return moddiffdict    
 starttime=time.perf_counter()
 p=3202260623
 q=1602260927
 
 
-p=244026977
-q=124027177
-
+p=14264028203
+q=28264028557
+p=53
+q=23
 
 d=p*q
 moddiffdict=makemoddiffdict(d)
-#for x in moddiffdict.keys():
-#    print(moddiffdict[x])
+for x in moddiffdict.keys():
+    print(moddiffdict[x])
 maxprime= max(moddiffdict)
 maxmoddiffdict=moddiffdict[maxprime]
 maxprimeprod=moddiffdict[maxprime]['primeprod']*maxprime
@@ -328,8 +336,8 @@ maxdiffmul=maxmoddiffdict['diffmullist']
 #print('maxprime',maxprime,'maxprimeprod',maxprimeprod,'maxdiffmul',maxdiffmul)
 
 
-#moddiffgen=searchmins(moddiffdict)
-moddiffgen=searchminsfloat(moddiffdict)
+moddiffgen=searchmins(moddiffdict)
+#moddiffgen=searchminsfloat(moddiffdict)
 
 
 more=True
@@ -347,10 +355,12 @@ while more and not found:
             total=total+(diff*muldiff)%(maxprimeprod)
         total=total%(maxprimeprod)
         tries+=1
-        #print('candidate',candidate,'maxdiffmul',maxdiffmul,'maxprimeprod',maxprimeprod,'total',total)
+        #if (candidate[0]==0 and candidate[1]==1 and candidate[2]==0 and candidate[3]==4 and candidate[4]==8 and candidate[5]==11 and candidate[6]==13 and candidate[7]==18 and candidate[8]==14 and candidate[9]==4 and candidate[10]==9 and candidate[11]==31 and candidate[12]==16 and candidate[13]==1 and candidate[14]==11 and candidate[15]==9 and candidate[16]==54 and candidate[17]==51 ):
+        
+        #    print('candidate',candidate,'maxdiffmul',maxdiffmul,'maxprimeprod',maxprimeprod,'total',total)
         if testdiff(d,total):
             found=True
-            print('woohoo',candidate,[1/(x/maxprimeprod) for x in maxdiffmul],total,p,q,d,'tries',tries)
+            print('woohoo',candidate,[x/maxprimeprod for x in maxdiffmul],total,p,q,d,'tries',tries)
     except StopIteration:
         more=False
 endtime=time.perf_counter()
