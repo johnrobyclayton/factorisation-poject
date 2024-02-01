@@ -276,7 +276,7 @@ def makemoddiffdict(d):
     difflenprod=1
     primegenerator=primegen()
     moddiffdict=dict()
-    while primeprod<(d**1) or prime<18:
+    while primeprod<(d**1) or prime<10:
     #while (primeprod/difflenprod)*100<(((d**.5)*1.2)):
         #print((primeprod/difflenprod)*100,((d**.5)*1.2))
         maxprime=max(moddiffdict,default=0)
@@ -322,8 +322,8 @@ q=1602260927
 
 p=14264028203
 q=28264028557
-p=53
-q=23
+p=61
+q=103
 
 d=p*q
 moddiffdict=makemoddiffdict(d)
