@@ -29,16 +29,8 @@ def MULINV(a,b):
         return x+b
     else:
         return x
-
-def primegen():
-    listofprimes=[2,3,5,7,11,13,17]  
-    while True:
-        prime=listofprimes[0]
-        listofprimes.pop(0)
-        yield prime
     
-      
-def primegenhide():
+def primegen():
     listofprimes=list()
     if len(listofprimes)==0:
         listofprimes.append(2)
@@ -284,8 +276,7 @@ def makemoddiffdict(d):
     difflenprod=1
     primegenerator=primegen()
     moddiffdict=dict()
-    prime=0
-    while primeprod<(d**1) and prime<10:
+    while primeprod<(d**1) or prime<18:
     #while (primeprod/difflenprod)*100<(((d**.5)*1.2)):
         #print((primeprod/difflenprod)*100,((d**.5)*1.2))
         maxprime=max(moddiffdict,default=0)
@@ -331,8 +322,8 @@ q=1602260927
 
 p=14264028203
 q=28264028557
-p=167
-q=283
+p=53
+q=23
 
 d=p*q
 moddiffdict=makemoddiffdict(d)
