@@ -80,6 +80,40 @@ def moddiff(prime,mod):
     #print('diff to return',prime,toreturn)
     return toreturn
 
+def moddiff2(prime,mod):
+    #print(prime,mod)
+    if mod==0:
+        #print('mod is zero, moddiff of a factor impossible')
+        return([])
+    pp=set(range(1,int(prime)))
+    for aves in range(1,(prime+1)/2):
+        for diffs in range(1,(prime+1)/2):
+            
+    diffs=set()
+    toreturn=[]
+    while len(pp):
+        #print(pp)
+        found=False
+        for i in pp:
+            for j in pp:
+                if (i*j)%prime==mod:
+                    if ((prime+i-j)%prime) not in diffs:
+                        #print(i,j,i*j,(i*j)%prime,prime,mod,((prime+i-j)%prime))
+                        diffs.add((prime+i-j)%prime)
+                        diffs.add((prime-i+j)%prime)
+                        toreturn.append((prime+i-j)%prime)
+                        if ((prime+i-j)%prime)!=0:
+                            toreturn.append((prime-i+j)%prime)
+                    pp.discard(i)
+                    pp.discard(j)
+                    found=True
+                if found:
+                    break
+            if found:
+                break
+    #print('diff to return',prime,toreturn)
+    return toreturn
+
 def diophantine_base(x,y):
     #diophantine ax+b=cy+d
     #example 3x+2=5y+3
